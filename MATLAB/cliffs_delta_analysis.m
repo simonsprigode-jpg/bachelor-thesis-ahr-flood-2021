@@ -1,257 +1,245 @@
-%% Cliff's Delta: KFV vs. Random-Buffer und KFV vs. Random-Points
-% Datengrundlage: drei Klassenstatistik-Tabellen mit abgegriffenen Rasterwerten.
+%% Cliff's Delta: KFV und Referenzmethoden
+% Vergleich der 9 Geländeparameter aus SAGA zwischen KFV und
+% Random-Buffer bzw. Random-Points.
 %
-% Es werden keine Zonalstatistiken und keine separaten TWI-/Flow-Dateien verwendet.
-% Die Spalte SK_1 wird ignoriert.
-%
-% Richtung der Delta-Werte:
-%   + Delta: KFV-Werte sind tendenziell groesser als Referenzwerte.
-%   - Delta: KFV-Werte sind tendenziell kleiner als Referenzwerte.
-%
-% Erzeugte Abbildungen:
-%   01_cliffs_delta_punktmethode.png/pdf
-%   02_cliffs_delta_buffermethode.png/pdf
-%   03_cliffs_delta_ranking_punktmethode.png/pdf
-%   04_cliffs_delta_ranking_buffermethode.png/pdf
-%   05_cliffs_delta_trennschaerfe_methodenvergleich.png/pdf
+% Positive Delta-Werte zeigen tendenziell höhere Werte in den KFV,
+% negative Delta-Werte tendenziell höhere Werte im Referenzdatensatz.
 
 clear; clc; close all;
 
-%% 0) Pfade
+
+%% 1) Daten- und Ausgabeordner
 
 dataDir = 'C:\Users\simon\BA Ahrtal 2026';
+outDir = fullfile(dataDir, 'plots_cliffs_delta');
 
-if ~isfolder(dataDir)
-    dataDir = uigetdir(pwd, 'Ordner mit den drei Klassenstatistik-Exceldateien auswählen');
-    if isequal(dataDir, 0)
-        error('Kein Datenordner ausgewählt.');
-    end
-end
-
-outDir = fullfile(dataDir, 'plots_cliffs_delta_3klassenstatistiken');
 if ~exist(outDir, 'dir')
     mkdir(outDir);
 end
 
-%% 1) Drei Klassenstatistik-Dateien finden
-% Gesucht werden nur Excel-Dateien (*.xlsx). QMD-Dateien werden ignoriert.
 
-files.kfvPoints = resolveExcelFile(dataDir, {'Klassenstatistik','KFV','Pixelwerte','SAGA','25 K'});
-files.randomBufferPoints = resolveExcelFile(dataDir, {'Klassenstatistik','Random','Buffer','Pixelwerte','SAGA','25 K'});
-files.randomPoints = resolveExcelFile(dataDir, {'Klassenstatistik','Random','Points','Pixelwerte','SAGA','25 K'});
+%% 2) Eingabedateien
 
-fprintf('\nVerwendete Dateien:\n');
-fprintf('KFV:           %s\n', files.kfvPoints);
-fprintf('Random-Buffer: %s\n', files.randomBufferPoints);
-fprintf('Random-Points: %s\n\n', files.randomPoints);
+files.kfvPoints = fullfile(dataDir, ...
+    'Klassenstatistik KFV Pixelwerte SAGA 25 K.xlsx');
 
-%% 2) Tabellen einlesen
+files.randomBufferPoints = fullfile(dataDir, ...
+    'Klassenstatistik Random Buffer Pixelwerte SAGA 25 K.xlsx');
+
+files.randomPoints = fullfile(dataDir, ...
+    'Klassenstatistik Random Points Pixelwerte SAGA 25 K.xlsx');
+
+
+%% 3) Tabellen einlesen
 
 T_kfv = readAnyTable(files.kfvPoints);
 T_randomBuffer = readAnyTable(files.randomBufferPoints);
 T_randomPoints = readAnyTable(files.randomPoints);
 
-%% 3) Parameter aus den drei Tabellen holen
-% Reihenfolge entsprechend deiner Attributtabellen:
-% Slope, VRM, Plan Curvature, Profile Curvature, MID, Valley Depth,
-% Convergence Index, TWI, Flow Accumulation.
 
-paramSpecs = {
-    'Slope',              'SLOPE_1';
-    'VRM',                'VRM_1';
-    'Plan Curvature',     'PLAN_1';
-    'Profile Curvature',  'PROF_1';
-    'Mid-Slope Position', 'MID_1';
-    'Valley Depth',       'VALLEY_1';
-    'Convergence Index',  'CONV_1';
-    'TWI',                'TWI_1';
-    'Flow Accumulation',  'FLOW_1'
+%% 4) Parameter
+
+% Bezeichnungen für Tabellen und Abbildungen
+paramLabels = {
+    'Slope', ...
+    'VRM', ...
+    'Plan Curvature', ...
+    'Profile Curvature', ...
+    'Mid-Slope Position', ...
+    'Valley Depth', ...
+    'Convergence Index', ...
+    'TWI', ...
+    'Flow Accumulation'
 };
 
-paramNames = paramSpecs(:,1);
-colNames = paramSpecs(:,2);
+% Interne MATLAB-Namen
+varNames = {
+    'Slope', ...
+    'VRM', ...
+    'PlanCurvature', ...
+    'ProfileCurvature', ...
+    'MidSlopePosition', ...
+    'ValleyDepth', ...
+    'ConvergenceIndex', ...
+    'TWI', ...
+    'FlowAccumulation'
+};
 
-KFV = table();
-RBUF = table();
-RPOINT = table();
+% Spaltennamen in den Eingangstabellen
+sourceColumns = {
+    'SLOPE_1', ...
+    'VRM_1', ...
+    'PLAN_1', ...
+    'PROF_1', ...
+    'MID_1', ...
+    'VALLEY_1', ...
+    'CONV_1', ...
+    'TWI_1', ...
+    'FLOW_1'
+};
 
-for i = 1:size(paramSpecs, 1)
-    safeName = matlab.lang.makeValidName(paramNames{i});
 
-    KFV.(safeName) = getRequiredColumn(T_kfv, colNames{i});
-    RBUF.(safeName) = getRequiredColumn(T_randomBuffer, colNames{i});
-    RPOINT.(safeName) = getRequiredColumn(T_randomPoints, colNames{i});
-end
+%% 5) Einheitliche Parametertabellen erzeugen
 
-%% 4) Cliff's Delta berechnen
+KFV = buildParameterTable( ...
+    T_kfv, varNames, sourceColumns);
+
+RBUF = buildParameterTable( ...
+    T_randomBuffer, varNames, sourceColumns);
+
+RPOINT = buildParameterTable( ...
+    T_randomPoints, varNames, sourceColumns);
+
+
+%% 6) Cliff's Delta berechnen
+
 % Buffermethode: KFV vs. Random-Buffer
-% Punktmethode: KFV vs. Random-Points
-
 deltaBuffer = cliffsDeltaTable(KFV, RBUF);
-deltaPoint  = cliffsDeltaTable(KFV, RPOINT);
+
+% Punktmethode: KFV vs. Random-Points
+deltaPoint = cliffsDeltaTable(KFV, RPOINT);
 
 absBuffer = abs(deltaBuffer);
-absPoint  = abs(deltaPoint);
+absPoint = abs(deltaPoint);
+
+
+%% 7) Relative Trennstärke berechnen
+
+% Anteil des absoluten Delta-Wertes eines Parameters an der
+% Summe aller absoluten Delta-Werte der jeweiligen Referenzmethode.
 
 shareBuffer = 100 * absBuffer ./ sum(absBuffer, 'omitnan');
-sharePoint  = 100 * absPoint  ./ sum(absPoint,  'omitnan');
+sharePoint = 100 * absPoint ./ sum(absPoint, 'omitnan');
 
-results = table(paramNames, deltaPoint(:), absPoint(:), sharePoint(:), ...
-                      deltaBuffer(:), absBuffer(:), shareBuffer(:), ...
-    'VariableNames', {'Parameter', ...
-                      'Delta_Punktmethode_KFV_vs_RandomPoints', ...
-                      'AbsDelta_Punktmethode', ...
-                      'Anteil_Punktmethode_pct', ...
-                      'Delta_Buffermethode_KFV_vs_RandomBuffer', ...
-                      'AbsDelta_Buffermethode', ...
-                      'Anteil_Buffermethode_pct'});
 
-resultsPointSorted = sortrows(results(:, {'Parameter', ...
-    'Delta_Punktmethode_KFV_vs_RandomPoints', 'AbsDelta_Punktmethode', 'Anteil_Punktmethode_pct'}), ...
-    'AbsDelta_Punktmethode', 'descend');
+%% 8) Ergebnistabelle für die weitere Verarbeitung
 
-resultsBufferSorted = sortrows(results(:, {'Parameter', ...
-    'Delta_Buffermethode_KFV_vs_RandomBuffer', 'AbsDelta_Buffermethode', 'Anteil_Buffermethode_pct'}), ...
-    'AbsDelta_Buffermethode', 'descend');
+results = table( ...
+    paramLabels(:), ...
+    deltaPoint(:), ...
+    absPoint(:), ...
+    sharePoint(:), ...
+    deltaBuffer(:), ...
+    absBuffer(:), ...
+    shareBuffer(:), ...
+    'VariableNames', { ...
+        'Parameter', ...
+        'Delta_Punktmethode', ...
+        'AbsDelta_Punktmethode', ...
+        'Anteil_Punktmethode_pct', ...
+        'Delta_Buffermethode', ...
+        'AbsDelta_Buffermethode', ...
+        'Anteil_Buffermethode_pct'});
 
-writetable(results, fullfile(outDir, 'cliffs_delta_gesamt_3klassenstatistiken.xlsx'));
-writetable(resultsPointSorted, fullfile(outDir, 'cliffs_delta_punktmethode_kfv_vs_randompoints.xlsx'));
-writetable(resultsBufferSorted, fullfile(outDir, 'cliffs_delta_buffermethode_kfv_vs_randombuffer.xlsx'));
 
-%% 5) Einzelabbildungen wie bisher
+% Sortierung für die beiden gerichteten Delta-Abbildungen
+resultsPointSorted = sortrows( ...
+    results(:, { ...
+        'Parameter', ...
+        'Delta_Punktmethode', ...
+        'AbsDelta_Punktmethode'}), ...
+    'AbsDelta_Punktmethode', ...
+    'descend');
 
-makeDeltaBarFigure(resultsPointSorted.Parameter, ...
-    resultsPointSorted.Delta_Punktmethode_KFV_vs_RandomPoints, ...
+resultsBufferSorted = sortrows( ...
+    results(:, { ...
+        'Parameter', ...
+        'Delta_Buffermethode', ...
+        'AbsDelta_Buffermethode'}), ...
+    'AbsDelta_Buffermethode', ...
+    'descend');
+
+
+%% 9) Gerichtete Cliff's-Delta-Werte
+
+makeDeltaBarFigure( ...
+    resultsPointSorted.Parameter, ...
+    resultsPointSorted.Delta_Punktmethode, ...
     'Cliff''s Delta: Punktmethode (KFV vs. Random-Points)', ...
     fullfile(outDir, '01_cliffs_delta_punktmethode'));
 
-makeDeltaBarFigure(resultsBufferSorted.Parameter, ...
-    resultsBufferSorted.Delta_Buffermethode_KFV_vs_RandomBuffer, ...
+makeDeltaBarFigure( ...
+    resultsBufferSorted.Parameter, ...
+    resultsBufferSorted.Delta_Buffermethode, ...
     'Cliff''s Delta: Buffermethode (KFV vs. Random-Buffer)', ...
     fullfile(outDir, '02_cliffs_delta_buffermethode'));
 
-makeAbsRankingFigure(resultsPointSorted.Parameter, ...
-    resultsPointSorted.Anteil_Punktmethode_pct, ...
-    'Relative Trennstaerke nach |Cliff''s Delta|: Punktmethode', ...
-    fullfile(outDir, '03_cliffs_delta_ranking_punktmethode'));
 
-makeAbsRankingFigure(resultsBufferSorted.Parameter, ...
-    resultsBufferSorted.Anteil_Buffermethode_pct, ...
-    'Relative Trennstaerke nach |Cliff''s Delta|: Buffermethode', ...
-    fullfile(outDir, '04_cliffs_delta_ranking_buffermethode'));
+%% 10) Methodenvergleich der relativen Trennstärke
 
-%% 6) Methodenvergleich der relativen Trennstaerke
+makeMethodComparisonFigure( ...
+    results.Parameter, ...
+    results.Anteil_Punktmethode_pct, ...
+    results.Anteil_Buffermethode_pct, ...
+    fullfile(outDir, ...
+    '05_cliffs_delta_trennschaerfe_methodenvergleich'));
 
-makeMethodComparisonRankingFigure(results.Parameter, ...
-    results.Anteil_Punktmethode_pct, results.Anteil_Buffermethode_pct, ...
-    fullfile(outDir, '05_cliffs_delta_trennschaerfe_methodenvergleich'));
 
-%% 7) Ausgabe im Command Window
+fprintf('\nFertig. Abbildungen gespeichert in:\n%s\n', outDir);
 
-fprintf('\nFertig. Ergebnisse liegen in:\n%s\n\n', outDir);
-
-fprintf('Top 3 nach |Cliff''s Delta| - Punktmethode, KFV vs. Random-Points:\n');
-disp(resultsPointSorted(1:min(3,height(resultsPointSorted)),:));
-
-fprintf('Top 3 nach |Cliff''s Delta| - Buffermethode, KFV vs. Random-Buffer:\n');
-disp(resultsBufferSorted(1:min(3,height(resultsBufferSorted)),:));
 
 %% Lokale Hilfsfunktionen
 
-function filepath = resolveExcelFile(folder, patterns)
-    D = dir(fullfile(folder, '*.xlsx'));
-    D = D(~startsWith({D.name}, '~$'));
 
-    if isempty(D)
-        error('Keine Excel-Dateien im Ordner gefunden: %s', folder);
+function T = readAnyTable(filePath)
+
+    if ~isfile(filePath)
+        error('Datei nicht gefunden: %s', filePath);
     end
 
-    names = {D.name};
-    namesNorm = cellfun(@normalizeText, names, 'UniformOutput', false);
+    T = readtable( ...
+        filePath, ...
+        'VariableNamingRule', 'preserve');
 
-    hit = false(size(names));
-    for i = 1:numel(names)
-        ok = true;
-        for p = 1:numel(patterns)
-            if ~contains(namesNorm{i}, normalizeText(patterns{p}))
-                ok = false;
-                break
-            end
+end
+
+
+function P = buildParameterTable(T, varNames, sourceColumns)
+
+    P = table();
+
+    for i = 1:numel(varNames)
+
+        columnName = sourceColumns{i};
+
+        if ~any(strcmp(columnName, T.Properties.VariableNames))
+            error('Spalte "%s" nicht gefunden.', columnName);
         end
-        hit(i) = ok;
+
+        P.(varNames{i}) = makeNumeric(T.(columnName));
+
     end
 
-    idx = find(hit);
-
-    if isempty(idx)
-        fprintf('\nVorhandene Excel-Dateien im Ordner:\n');
-        disp(names');
-        error('Keine Excel-Datei gefunden fuer Muster: %s', strjoin(patterns, ', '));
-    elseif numel(idx) > 1
-        fprintf('\nMehrere Treffer fuer Muster %s:\n', strjoin(patterns, ', '));
-        disp(names(idx)');
-        error('Bitte Dateinamen eindeutiger machen oder Suchmuster im Code anpassen.');
-    end
-
-    filepath = fullfile(D(idx).folder, D(idx).name);
 end
 
-function s = normalizeText(s)
-    s = lower(string(s));
-    s = strrep(s, 'ä', 'a');
-    s = strrep(s, 'ö', 'o');
-    s = strrep(s, 'ü', 'u');
-    s = strrep(s, 'ß', 'ss');
-    s = regexprep(s, '[^a-z0-9]', '');
-end
-
-function T = readAnyTable(f)
-    if ~isfile(f)
-        error('Datei nicht gefunden: %s', f);
-    end
-    T = readtable(f, 'VariableNamingRule', 'preserve');
-end
-
-function x = getRequiredColumn(T, wantedName)
-    names = string(T.Properties.VariableNames);
-    namesNorm = normalizeVarNames(names);
-    wantedNorm = normalizeVarNames(string(wantedName));
-
-    idx = find(namesNorm == wantedNorm, 1);
-
-    if isempty(idx)
-        error('Spalte nicht gefunden: %s\nVorhandene Spalten sind:\n%s', ...
-            wantedName, strjoin(cellstr(names), ', '));
-    end
-
-    x = makeNumeric(T.(T.Properties.VariableNames{idx}));
-    x = x(isfinite(x));
-end
-
-function out = normalizeVarNames(in)
-    out = lower(string(in));
-    out = regexprep(out, '[^a-z0-9]', '');
-end
 
 function x = makeNumeric(x)
+
     if istable(x)
         x = table2array(x);
     end
+
     if iscell(x)
         x = string(x);
     end
-    if isstring(x) || ischar(x)
-        x = str2double(x);
+
+    if isstring(x) || ischar(x) || iscategorical(x)
+        x = str2double(string(x));
     end
+
     x = double(x);
     x = x(:);
+
 end
 
+
 function deltas = cliffsDeltaTable(T1, T2)
+
     vars = T1.Properties.VariableNames;
     deltas = nan(1, numel(vars));
 
     for i = 1:numel(vars)
+
         x = T1.(vars{i});
         y = T2.(vars{i});
 
@@ -259,10 +247,14 @@ function deltas = cliffsDeltaTable(T1, T2)
         y = y(isfinite(y));
 
         deltas(i) = cliffsDeltaFast(x, y);
+
     end
+
 end
 
+
 function delta = cliffsDeltaFast(x, y)
+
     x = x(:);
     y = y(:);
 
@@ -274,136 +266,174 @@ function delta = cliffsDeltaFast(x, y)
         return
     end
 
+    % Gemeinsame Rangfolge beider Gruppen
     values = [x; y];
     groupX = [true(nx,1); false(ny,1)];
 
-    [sortedVals, order] = sort(values);
+    [sortedValues, order] = sort(values);
     ranks = zeros(size(values));
 
+    % Bei Bindungen wird der mittlere Rang vergeben
     n = numel(values);
     k = 1;
+
     while k <= n
+
         j = k;
-        while j < n && sortedVals(j+1) == sortedVals(k)
+
+        while j < n && sortedValues(j+1) == sortedValues(k)
             j = j + 1;
         end
 
-        avgRank = (k + j) / 2;
-        ranks(order(k:j)) = avgRank;
+        meanRank = (k + j) / 2;
+        ranks(order(k:j)) = meanRank;
+
         k = j + 1;
+
     end
 
+    % Cliff's Delta aus der Rangsumme der ersten Gruppe
     rankSumX = sum(ranks(groupX));
-    U = rankSumX - nx*(nx+1)/2;
+    U = rankSumX - nx * (nx + 1) / 2;
 
-    % Positiv: Werte von x sind tendenziell groesser als Werte von y.
     delta = (2 * U / (nx * ny)) - 1;
+
 end
 
-function makeDeltaBarFigure(paramList, deltaVals, figTitle, outBase)
-    fig = figure('Color','w','Position',[100 100 1100 650]);
 
-    bar(deltaVals);
-    yline(0, '-', 'HandleVisibility','off');
+function makeDeltaBarFigure(paramList, deltaValues, figTitle, outBase)
 
-    xticks(1:numel(deltaVals));
+    fig = figure( ...
+        'Color', 'w', ...
+        'Position', [100 100 1100 650]);
+
+    bar(deltaValues);
+
+    yline(0, '-', ...
+        'HandleVisibility', 'off');
+
+    xticks(1:numel(deltaValues));
     xticklabels(paramList);
     xtickangle(35);
 
     ylabel('Cliff''s Delta');
-    title(figTitle, 'Interpreter','none', 'FontWeight','bold');
+
+    title( ...
+        figTitle, ...
+        'Interpreter', 'none', ...
+        'FontWeight', 'bold');
 
     grid on;
     ylim([-1.12 1.12]);
 
-    for i = 1:numel(deltaVals)
-        if deltaVals(i) >= 0
-            yText = deltaVals(i) + 0.04;
-            vAlign = 'bottom';
+
+    % Delta-Werte an den Balken ausgeben
+    for i = 1:numel(deltaValues)
+
+        if deltaValues(i) >= 0
+            yText = deltaValues(i) + 0.04;
+            verticalAlignment = 'bottom';
         else
-            yText = deltaVals(i) - 0.04;
-            vAlign = 'top';
+            yText = deltaValues(i) - 0.04;
+            verticalAlignment = 'top';
         end
 
-        text(i, yText, sprintf('%.2f', deltaVals(i)), ...
-            'HorizontalAlignment','center', ...
-            'VerticalAlignment', vAlign, ...
+        text( ...
+            i, yText, sprintf('%.2f', deltaValues(i)), ...
+            'HorizontalAlignment', 'center', ...
+            'VerticalAlignment', verticalAlignment, ...
             'FontSize', 10);
+
     end
 
-    exportgraphics(fig, [outBase '.png'], 'Resolution', 300);
-    exportgraphics(fig, [outBase '.pdf'], 'ContentType','vector');
+
+    exportgraphics( ...
+        fig, ...
+        [outBase '.png'], ...
+        'Resolution', 300);
+
     close(fig);
+
 end
 
-function makeAbsRankingFigure(paramList, values, figTitle, outBase)
-    fig = figure('Color','w','Position',[100 100 1100 650]);
 
-    bar(values);
+function makeMethodComparisonFigure( ...
+    paramList, sharePoint, shareBuffer, outBase)
 
-    xticks(1:numel(values));
-    xticklabels(paramList);
-    xtickangle(35);
+    % Gemeinsame Sortierung nach dem mittleren Anteil beider Methoden
+    combinedShare = mean( ...
+        [sharePoint(:), shareBuffer(:)], ...
+        2, ...
+        'omitnan');
 
-    ylabel('Relativer Anteil an Summe |Delta| (%)');
-    title(figTitle, 'Interpreter','none', 'FontWeight','bold');
-
-    grid on;
-
-    ymax = max(values, [], 'omitnan');
-    ylim([0, ymax * 1.16]);
-
-    for i = 1:numel(values)
-        text(i, values(i) + 0.015*ymax, sprintf('%.1f', values(i)), ...
-            'HorizontalAlignment','center', 'FontSize', 10);
-    end
-
-    exportgraphics(fig, [outBase '.png'], 'Resolution', 300);
-    exportgraphics(fig, [outBase '.pdf'], 'ContentType','vector');
-    close(fig);
-end
-
-function makeMethodComparisonRankingFigure(paramList, sharePoint, shareBuffer, outBase)
-    % Gemeinsame Sortierung nach mittlerem Anteil beider Methoden.
-    combinedShare = mean([sharePoint(:), shareBuffer(:)], 2, 'omitnan');
     [~, order] = sort(combinedShare, 'descend');
 
-    pNames = paramList(order);
-    vals = [sharePoint(order), shareBuffer(order)];
+    parameterNames = paramList(order);
 
-    fig = figure('Color','w','Position',[100 100 1200 680]);
+    values = [ ...
+        sharePoint(order), ...
+        shareBuffer(order)];
 
-    bar(vals, 'grouped');
 
-    xticks(1:numel(pNames));
-    xticklabels(pNames);
+    fig = figure( ...
+        'Color', 'w', ...
+        'Position', [100 100 1200 680]);
+
+    bar(values, 'grouped');
+
+    xticks(1:numel(parameterNames));
+    xticklabels(parameterNames);
     xtickangle(35);
 
     ylabel('Relativer Anteil an Summe |Delta| (%)');
-    title('Relative Trennstaerke nach |Cliff''s Delta|: Methodenvergleich', ...
-        'Interpreter','none', 'FontWeight','bold');
 
-    legend({'Punktmethode: KFV vs. Random-Points', ...
-            'Buffermethode: KFV vs. Random-Buffer'}, ...
-            'Location','northeast', 'Interpreter','none');
+    title( ...
+        'Relative Trennstaerke nach |Cliff''s Delta|: Methodenvergleich', ...
+        'Interpreter', 'none', ...
+        'FontWeight', 'bold');
+
+    legend( ...
+        {'Punktmethode: KFV vs. Random-Points', ...
+         'Buffermethode: KFV vs. Random-Buffer'}, ...
+        'Location', 'northeast', ...
+        'Interpreter', 'none');
 
     grid on;
 
-    ymax = max(vals, [], 'all', 'omitnan');
+
+    ymax = max(values, [], 'all', 'omitnan');
     ylim([0, ymax * 1.18]);
 
-    % Werte oberhalb der Balken
-    nbars = size(vals, 2);
-    groupWidth = min(0.8, nbars/(nbars + 1.5));
-    for j = 1:nbars
-        x = (1:numel(pNames)) - groupWidth/2 + (2*j-1) * groupWidth / (2*nbars);
-        for i = 1:numel(pNames)
-            text(x(i), vals(i,j) + 0.015*ymax, sprintf('%.1f', vals(i,j)), ...
-                'HorizontalAlignment','center', 'FontSize', 9);
+
+    % Prozentwerte oberhalb der Balken
+    nBars = size(values, 2);
+    groupWidth = min(0.8, nBars / (nBars + 1.5));
+
+    for j = 1:nBars
+
+        x = (1:numel(parameterNames)) ...
+            - groupWidth / 2 ...
+            + (2*j - 1) * groupWidth / (2*nBars);
+
+        for i = 1:numel(parameterNames)
+
+            text( ...
+                x(i), ...
+                values(i,j) + 0.015*ymax, ...
+                sprintf('%.1f', values(i,j)), ...
+                'HorizontalAlignment', 'center', ...
+                'FontSize', 9);
+
         end
+
     end
 
-    exportgraphics(fig, [outBase '.png'], 'Resolution', 300);
-    exportgraphics(fig, [outBase '.pdf'], 'ContentType','vector');
+
+    exportgraphics( ...
+        fig, ...
+        [outBase '.png'], ...
+        'Resolution', 300);
+
     close(fig);
+
 end
