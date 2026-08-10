@@ -50,7 +50,7 @@ Arbeit oder der fachlichen Eigenleistung dar.
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
 ca. **25–30 %**
 
-
+---
 
 ### `02_spearman_correlation_analysis.m` Korrelationsmatrizen
 
@@ -75,7 +75,7 @@ ca. **25–30 %**
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
 ca. **30 %**
 
-
+---
 
 ### `03_cliffs_delta_analysis.m` Cliffs Delta Trennschärfe 
 
