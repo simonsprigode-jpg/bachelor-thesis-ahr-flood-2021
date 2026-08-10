@@ -10,13 +10,17 @@ clear; clc; close all;
 
 %% 1) Daten- und Ausgabeordner
 
-dataDir = 'C:\Users\simon\BA Ahrtal 2026';
+dataDir = uigetdir(pwd, 'Ordner mit den Eingangsdaten auswählen');
+
+if isequal(dataDir, 0)
+    error('Kein Datenordner ausgewählt.');
+end
+
 outDir = fullfile(dataDir, 'plots_cliffs_delta');
 
 if ~exist(outDir, 'dir')
     mkdir(outDir);
 end
-
 
 %% 2) Eingabedateien
 
