@@ -1738,6 +1738,6 @@ Map.addLayer(slope, visSlope, 'slope (deg)', false);
 Map.addLayer(steep, {palette: ['FFFFFF']}, 'Mask: steep (slope > 8°)', false);
 
 // 10) Ausgabe der verwendeten Schwellenwerte
-print('Threshold dNDVI:', T_DNDVI);
-print('Threshold dBSI:', T_DBSI);
-print('Slope threshold:', SLOPE_DEG);
+print('Threshold dNDVI:');
+print('Threshold dBSI:');
+print('Slope threshold:');
