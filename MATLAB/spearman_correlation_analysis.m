@@ -143,15 +143,27 @@ function P = buildParameterTable(T, varNames, sourceColumns)
 
     P = table();
 
+    % Spaltennamen vereinheitlichen:
+    % Unterstriche, Leerzeichen und Zeilenumbrüche werden für die Suche ignoriert.
+    originalNames = string(T.Properties.VariableNames);
+    cleanNames = upper(regexprep(originalNames, '[^A-Za-z0-9]', ''));
+
     for i = 1:numel(varNames)
 
-        columnName = sourceColumns{i};
+        wanted = upper(regexprep( ...
+            string(sourceColumns{i}), ...
+            '[^A-Za-z0-9]', ''));
 
-        if ~any(strcmp(columnName, T.Properties.VariableNames))
-            error('Spalte "%s" nicht gefunden.', columnName);
+        idx = find(cleanNames == wanted, 1);
+
+        if isempty(idx)
+            error('Spalte "%s" nicht gefunden.', sourceColumns{i});
         end
 
-        P.(varNames{i}) = makeNumeric(T.(columnName));
+        actualName = originalNames(idx);
+
+        P.(varNames{i}) = makeNumeric( ...
+            T.(char(actualName)));
 
     end
 
