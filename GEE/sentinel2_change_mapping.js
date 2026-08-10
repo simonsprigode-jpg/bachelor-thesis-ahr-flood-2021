@@ -9,8 +9,8 @@
 // 5) Veränderungslayer berechnen: post - pre
 // 6) Masken für auffällige Veränderungsflächen
 // 7) Hangneigung aus SRTM DEM
-// 8) Visualisierung
-// 9) Layer hinzufügen
+// 8) Visualisierungsparameter festlegen
+// 9) Layer zur Karte hinzufügen
 // 10) Ausgabe der verwendeten Schwellenwerte
 
 // 0) Untersuchungsgebiet AOI2
@@ -1683,7 +1683,7 @@ var steep = slope.gt(SLOPE_DEG)
 .selfMask()
 .rename('steep');
 
-// 8) Visualisierung
+// 8) Visualisierungsparameter festlegen
 var visRGB = {
 min: 0,
 max: 3000,
@@ -1713,7 +1713,7 @@ min: 0,
 max: 40
 };
 
-// 9) Layer hinzufügen
+// 9) Layer zur Karte hinzufügen
 
 // RGB-Komposite
 Map.addLayer(pre, visRGB, 'RGB pre', false);
