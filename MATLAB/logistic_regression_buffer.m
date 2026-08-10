@@ -457,6 +457,91 @@ P(invalid_model) = NaN;
     P(P < 0) = 0;
     P(P > 1) = 1;
 
+    P = 1 ./ (1 + exp(-eta));
+
+    invalid_model = invalid_base;
+
+    P(invalid_model) = NaN;
+    P(P < 0) = 0;
+    P(P > 1) = 1;
+
+    %% Rasterauswertung nur fuer das beste Buffermodell
+    if k == bestIdx
+
+        valid = ~isnan(P) & isfinite(P) & isfinite(eta);
+
+        P_valid = double(P(valid));
+        eta_valid = double(eta(valid));
+
+        eta_threshold_075 = log(0.75 / (1 - 0.75));
+
+        nValid = numel(P_valid);
+        nHigh075 = sum(P_valid >= 0.75);
+        shareHigh075 = 100 * mean(P_valid >= 0.75);
+
+        rasterEtaSummary = table( ...
+            nValid, ...
+            nHigh075, ...
+            shareHigh075, ...
+            eta_threshold_075, ...
+            min(eta_valid), ...
+            prctile(eta_valid, 25), ...
+            median(eta_valid), ...
+            mean(eta_valid), ...
+            prctile(eta_valid, 75), ...
+            prctile(eta_valid, 95), ...
+            max(eta_valid), ...
+            'VariableNames', { ...
+            'NValidPixels', ...
+            'N_P_GE_075', ...
+            'Share_P_GE_075_Percent', ...
+            'EtaThreshold_P075', ...
+            'EtaMinimum', ...
+            'EtaQ1', ...
+            'EtaMedian', ...
+            'EtaMean', ...
+            'EtaQ3', ...
+            'EtaP95', ...
+            'EtaMaximum'});
+
+        fprintf('\nRasterauswertung des besten Buffermodells:\n');
+        disp(rasterEtaSummary);
+
+        writetable(rasterEtaSummary, fullfile(outDir, ...
+            'raster_eta_summary_best_buffer_based_model.xlsx'));
+    end
+
+    fprintf('\nModel_%02d Kartenkontrolle:\n', k);
+   %% GeoTIFF-Export fuer QGIS: nur Model 4 und Model 9
+    % Vollstaendige Wahrscheinlichkeitskarte:
+    % Wertebereich 0 bis 1; NaN bleibt ausserhalb/ungueltig.
+    % EPSG:25832 passt zu deinem Ahrtal-Projekt in UTM 32N.
+
+    if ismember(k, [4 9])
+
+        P_out = single(P);
+
+        geotiffwrite(fullfile(outDir, ...
+            sprintf('buffer_model_%02d_probability_full.tif', k)), ...
+            P_out, Rgeo, 'CoordRefSysCode', 25832);
+
+        % Zusaetzlich: nur Hochwahrscheinlichkeitsbereich 0.75 bis 1.0.
+        % Alles darunter wird NaN und kann in QGIS transparent dargestellt werden.
+
+        P_high = P_out;
+        P_high(P_high < 0.75) = NaN;
+
+        geotiffwrite(fullfile(outDir, ...
+            sprintf('buffer_model_%02d_probability_high_075_100.tif', k)), ...
+            P_high, Rgeo, 'CoordRefSysCode', 25832);
+
+        clear P_out P_high
+    end
+
+   fprintf('\nModel_%02d Kartenkontrolle:\n', k);
+fprintf('NaN-Anteil P: %.2f %%\n', 100 * sum(isnan(P(:))) / numel(P));
+fprintf('Minimum P: %.4f\n', min(P(:), [], 'omitnan'));
+fprintf('Maximum P: %.4f\n', max(P(:), [], 'omitnan'));
    fprintf('\nModel_%02d Kartenkontrolle:\n', k);
 fprintf('NaN-Anteil P: %.2f %%\n', 100 * sum(isnan(P(:))) / numel(P));
 fprintf('Minimum P: %.4f\n', min(P(:), [], 'omitnan'));
@@ -627,3 +712,4 @@ function cmap = blueYellowRed(n)
             interp1(x, g, xi)', ...
             interp1(x, b, xi)'];
 end
+
