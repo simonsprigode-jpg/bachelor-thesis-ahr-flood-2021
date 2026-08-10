@@ -1,105 +1,110 @@
-%% buffer_logistic_regression_probability_maps_full.m
-% Bufferbasierte logistische Regression mit 9 schrittweisen Modellen
-% und Kartenerzeugung fuer jedes Modell.
+%% Bufferbasierte logistische Regression
+% Neun schrittweise erweiterte logistische Regressionsmodelle
+% zur Unterscheidung von KFV und Random-Buffer.
 %
-% Behaltene Outputs:
-% - AIC-Werte in der Konsole
-% - ROC-Kurve mit AUC fuer bestes Modell
-% - Konfusionsmatrix fuer bestes Modell
-% - Pro Modell:
-%   1) fein abgestufte Karte 0-1, blau = gering, rot = hoch
-%   2) klassifizierte Karte 0-1 in 5 Klassen
+% Flow Accumulation wird vor der Modellierung mit log10(x+1)
+% transformiert. Alle Prädiktoren werden z-standardisiert.
 %
-% Keine geglaettete Karte.
-% Keine Histogramme.
-% Zusaetzlich: Koeffizientenplot des besten Modells.
-%
-% Wichtig:
-% Die Rasterwerte werden wie die Punktdaten z-standardisiert.
-% Die Karten sind echte logistische Regressionskarten.
+% Für jedes Modell werden eine fein abgestufte und eine
+% klassifizierte Anfälligkeitskarte erzeugt.
+% Für Modell 4 und Modell 9 werden zusätzlich GeoTIFFs exportiert.
 
 clear; clc; close all;
 
-%% 0) Ausgabeordner waehlen
 
-outDir = uigetdir(pwd, 'Ausgabeordner fuer Ergebnisse auswaehlen');
+%% 1) Ausgabeordner wählen
+
+outDir = uigetdir(pwd, 'Ausgabeordner für Ergebnisse auswählen');
 
 if isequal(outDir, 0)
-    error('Kein Ausgabeordner ausgewaehlt.');
+    error('Kein Ausgabeordner ausgewählt.');
 end
 
 fprintf('\nAusgabeordner:\n%s\n', outDir);
 
-%% 1) Tabellen auswaehlen
 
-fprintf('\nBitte KFV-1000-Tabelle auswaehlen.\n');
-[hangName, hangPath] = uigetfile({'*.xlsx;*.xls','Excel-Dateien (*.xlsx, *.xls)'}, ...
-    'KFV-1000-Tabelle auswaehlen');
+%% 2) Eingangstabellen auswählen
 
-if isequal(hangName, 0)
-    error('Keine KFV-Tabelle ausgewaehlt.');
+fprintf('\nBitte KFV-1000-Tabelle auswählen.\n');
+
+[kfvName, kfvPath] = uigetfile( ...
+    {'*.xlsx;*.xls', 'Excel-Dateien (*.xlsx, *.xls)'}, ...
+    'KFV-1000-Tabelle auswählen');
+
+if isequal(kfvName, 0)
+    error('Keine KFV-Tabelle ausgewählt.');
 end
 
-fprintf('\nBitte Random-Buffer-1000-Tabelle auswaehlen.\n');
-[randomName, randomPath] = uigetfile({'*.xlsx;*.xls','Excel-Dateien (*.xlsx, *.xls)'}, ...
-    'Random-Buffer-1000-Tabelle auswaehlen');
 
-if isequal(randomName, 0)
-    error('Keine Random-Buffer-Tabelle ausgewaehlt.');
+fprintf('\nBitte Random-Buffer-1000-Tabelle auswählen.\n');
+
+[bufferName, bufferPath] = uigetfile( ...
+    {'*.xlsx;*.xls', 'Excel-Dateien (*.xlsx, *.xls)'}, ...
+    'Random-Buffer-1000-Tabelle auswählen');
+
+if isequal(bufferName, 0)
+    error('Keine Random-Buffer-Tabelle ausgewählt.');
 end
 
-hangFile = fullfile(hangPath, hangName);
-randomFile = fullfile(randomPath, randomName);
 
-H_raw = readtable(hangFile, 'VariableNamingRule', 'modify');
-R_raw = readtable(randomFile, 'VariableNamingRule', 'modify');
+kfvFile = fullfile(kfvPath, kfvName);
+bufferFile = fullfile(bufferPath, bufferName);
 
-fprintf('\nKFV-Tabelle: %d Zeilen\n', height(H_raw));
-fprintf('Random-Buffer-Tabelle: %d Zeilen\n', height(R_raw));
+KFV_raw = readtable( ...
+    kfvFile, ...
+    'VariableNamingRule', 'preserve');
 
-disp('Spalten KFV:');
-disp(H_raw.Properties.VariableNames');
+Buffer_raw = readtable( ...
+    bufferFile, ...
+    'VariableNamingRule', 'preserve');
 
-disp('Spalten Random-Buffer:');
-disp(R_raw.Properties.VariableNames');
+fprintf('\nKFV-Tabelle:           %d Zeilen\n', height(KFV_raw));
+fprintf('Random-Buffer-Tabelle: %d Zeilen\n', height(Buffer_raw));
 
-%% 2) Modelltabellen bauen
 
-H = makeModelTable(H_raw, 1, "KFV");
-R = makeModelTable(R_raw, 0, "Random-Buffer");
+%% 3) Modelldatensatz erzeugen
 
-D = [H; R];
+KFV = makeModelTable(KFV_raw, 1, "KFV");
+RandomBuffer = makeModelTable(Buffer_raw, 0, "RandomBuffer");
+
+D = [KFV; RandomBuffer];
 
 % Flow Accumulation logarithmieren
 D.FLOW_LOG = log10(1 + D.FLOW);
 
-% Reihenfolge der schrittweisen Modelle:
-% Model_1 = SLOPE
-% Model_2 = SLOPE + MID
-% Model_3 = SLOPE + MID + TWI
+% Reihenfolge der schrittweise erweiterten Modelle:
+% Modell 1 = SLOPE
+% Modell 2 = SLOPE + MID
+% Modell 3 = SLOPE + MID + TWI
 % ...
-% Model_9 = alle Parameter
-predictor_order = {'SLOPE','MID','TWI','FLOW_LOG', ...
-                   'VALLEY','VRM','PLAN','PROF','CONV'};
+% Modell 9 = alle neun Parameter
 
-D = D(:, [{'Y','GROUP'}, predictor_order]);
+predictor_order = { ...
+    'SLOPE', ...
+    'MID', ...
+    'TWI', ...
+    'FLOW_LOG', ...
+    'VALLEY', ...
+    'VRM', ...
+    'PLAN', ...
+    'PROF', ...
+    'CONV'};
 
-fprintf('\nBeobachtungen vor modellweiser Bereinigung: %d\n', height(D));
-disp('Klassenverteilung vor modellweiser Bereinigung:');
-tabulate(D.Y)
+D = D(:, [{'Y', 'GROUP'}, predictor_order]);
 
-fprintf('\nBeobachtungen nach Entfernen fehlender Werte: %d\n', height(D));
+fprintf('\nBeobachtungen im Gesamtdatensatz: %d\n', height(D));
 disp('Klassenverteilung:');
-tabulate(D.Y)
+tabulate(D.Y);
 
-%% 3) Punktdaten der KFV- und Random-Buffer-Stichprobe standardisieren
+
+%% 4) Prädiktoren z-standardisieren
 
 D_std = D;
 
 standardizationStats = table();
 standardizationStats.Param = predictor_order';
 standardizationStats.Mean = nan(numel(predictor_order), 1);
-standardizationStats.Std  = nan(numel(predictor_order), 1);
+standardizationStats.Std = nan(numel(predictor_order), 1);
 
 for i = 1:numel(predictor_order)
 
@@ -113,18 +118,22 @@ for i = 1:numel(predictor_order)
     end
 
     standardizationStats.Mean(i) = mu;
-    standardizationStats.Std(i)  = sd;
+    standardizationStats.Std(i) = sd;
 
     D_std.(p) = (D.(p) - mu) ./ sd;
+
 end
 
 fprintf('\nStandardisierungswerte:\n');
 disp(standardizationStats);
 
-% Standardisierungswerte speichern
-writetable(standardizationStats, fullfile(outDir, 'standardization_values_buffer_logistic_regression.xlsx'));
+writetable( ...
+    standardizationStats, ...
+    fullfile(outDir, ...
+    'standardization_values_buffer_logistic_regression.xlsx'));
 
-%% 4) 9 logistische Modelle fitten und AIC vergleichen
+
+%% 5) Neun logistische Modelle fitten
 
 nModels = numel(predictor_order);
 
@@ -137,23 +146,26 @@ NumPredictors = nan(nModels, 1);
 
 models = cell(nModels, 1);
 modelData = cell(nModels, 1);
+
+
 for k = 1:nModels
 
     preds = predictor_order(1:k);
+
     formula = "Y ~ " + strjoin(string(preds), " + ");
 
-    % Fuer jedes Modell nur die jeweils benoetigten Variablen verwenden
-    D_model = D_std(:, [{'Y','GROUP'}, preds]);
+    % Nur die für das jeweilige Modell benötigten Variablen verwenden
+    D_model = D_std(:, [{'Y', 'GROUP'}, preds]);
 
-    % Fehlende Werte nur fuer dieses konkrete Modell entfernen
+    % Fehlende Werte modellweise entfernen
     D_model = rmmissing(D_model);
 
-    fprintf('\nFitte Model_%d:\n%s\n', k, formula);
+    fprintf('\nModell %d:\n%s\n', k, formula);
     fprintf('Verwendete Beobachtungen: %d\n', height(D_model));
-    disp('Klassenverteilung dieses Modells:');
-    tabulate(D_model.Y)
 
-    mdl = fitglm(D_model, formula, ...
+    mdl = fitglm( ...
+        D_model, ...
+        formula, ...
         'Distribution', 'binomial', ...
         'Link', 'logit');
 
@@ -169,206 +181,224 @@ for k = 1:nModels
 
 end
 
-results = table(ModelName, NumPredictors, Formula, AIC, BIC, Deviance);
+
+%% 6) Modellvergleich
+
+results = table( ...
+    ModelName, ...
+    NumPredictors, ...
+    Formula, ...
+    AIC, ...
+    BIC, ...
+    Deviance);
+
 results.DeltaAIC = results.AIC - min(results.AIC);
+
 results = sortrows(results, 'AIC');
 
-fprintf('\nAIC-MODELLVERGLEICH:\n');
+writetable( ...
+    results, ...
+    fullfile(outDir, ...
+    'AIC_model_comparison_buffer_logistic_regression.xlsx'));
+
+fprintf('\nMODELLVERGLEICH:\n');
 disp(results);
 
-% Modellvergleich speichern
-writetable(results, fullfile(outDir, 'AIC_model_comparison_buffer_logistic_regression.xlsx'));
-%% 4b) AIC-Plot fuer alle 9 Modelle
 
-fig = figure('Color','w','Position',[100 100 950 600]);
+%% 7) Bestes Modell auswählen
 
-bar(1:nModels, AIC);
-
-set(gca, ...
-    'XTick', 1:nModels, ...
-    'XTickLabel', cellstr(ModelName));
-
-xlabel('Modell');
-ylabel('AIC');
-title('AIC comparison - buffer-based logistic regression', ...
-    'Interpreter','none');
-
-grid on;
-
-exportgraphics(fig, fullfile(outDir, ...
-    'AIC_comparison_buffer_based_logistic_regression.png'), ...
-    'Resolution', 300);
-
-close(fig);
 bestModelName = results.ModelName(1);
+
 bestIdx = find(ModelName == bestModelName, 1);
+
 bestModel = models{bestIdx};
 D_best = modelData{bestIdx};
+
 fprintf('\nBestes Modell nach AIC: %s\n', bestModelName);
 fprintf('Formel: %s\n', results.Formula(1));
 fprintf('AIC: %.4f\n', results.AIC(1));
+fprintf('BIC: %.4f\n', results.BIC(1));
 fprintf('DeltaAIC: %.4f\n', results.DeltaAIC(1));
-%% 4c) Koeffizientenplot des besten Modells
+
+
+%% 8) Koeffizienten des besten Modells
 
 coefTable = bestModel.Coefficients;
 
 coefTableOut = coefTable;
 coefTableOut.Predictor = string(coefTableOut.Properties.RowNames);
-coefTableOut = movevars(coefTableOut, 'Predictor', 'Before', 1);
-writetable(coefTableOut, fullfile(outDir, 'coefficients_best_buffer_based_logistic_model.xlsx'));
 
-coefNames = string(coefTable.Properties.RowNames);
-coefNames(coefNames == "(Intercept)") = "Intercept";
+coefTableOut = movevars( ...
+    coefTableOut, ...
+    'Predictor', ...
+    'Before', 1);
 
-coefValues = coefTable.Estimate;
+writetable( ...
+    coefTableOut, ...
+    fullfile(outDir, ...
+    'coefficients_best_buffer_based_logistic_model.xlsx'));
 
-% Alphabetische Sortierung wie in deiner bisherigen Abbildung
-[coefNamesPlot, sortIdx] = sort(coefNames);
-coefValuesPlot = coefValues(sortIdx);
+fprintf('\nKoeffizienten des besten Modells:\n');
+disp(coefTableOut);
 
-fig = figure('Color','w','Position',[100 100 1050 650]);
 
-bar(1:numel(coefValuesPlot), coefValuesPlot);
-yline(0, 'k-', 'LineWidth', 1);
-
-set(gca, ...
-    'XTick', 1:numel(coefNamesPlot), ...
-    'XTickLabel', cellstr(coefNamesPlot), ...
-    'XTickLabelRotation', 35);
-
-xlabel('Predictor');
-ylabel('Standardized coefficient estimate');
-title('Coefficients of best buffer-based logistic model', ...
-    'Interpreter','none');
-
-grid on;
-
-exportgraphics(fig, fullfile(outDir, ...
-    'coefficients_best_buffer_based_logistic_model.png'), ...
-    'Resolution', 300);
-
-close(fig);
-%% 5) ROC-Kurve, AUC und Konfusionsmatrix fuer bestes Modell
+%% 9) ROC, AUC und Konfusionsmatrix
 
 p_hat = predict(bestModel, D_best);
 
-[Xroc, Yroc, ~, AUC] = perfcurve(D_best.Y, p_hat, 1);
+[Xroc, Yroc, ~, AUC] = perfcurve( ...
+    D_best.Y, ...
+    p_hat, ...
+    1);
 
 fprintf('\nAUC des besten Modells: %.4f\n', AUC);
 
-fig = figure('Color','w','Position',[100 100 850 650]);
-plot(Xroc, Yroc, 'LineWidth', 1.8);
-hold on;
-plot([0 1], [0 1], '--', 'LineWidth', 1);
-xlabel('False positive rate');
-ylabel('True positive rate');
-title(sprintf('ROC curve - best buffer-based logistic model (AUC = %.4f)', AUC), ...
-    'Interpreter','none');
-grid on;
-axis square;
 
-exportgraphics(fig, fullfile(outDir, ...
-    'ROC_best_buffer_based_model_AUC.png'), ...
-    'Resolution', 300);
-close(fig);
-
+% Klassifikation bei p = 0.5
 Y_true = double(D_best.Y);
 Y_pred = double(p_hat >= 0.5);
 
-confMat = confusionmat(Y_true, Y_pred, 'Order', [0 1]);
+confMat = confusionmat( ...
+    Y_true, ...
+    Y_pred, ...
+    'Order', [0 1]);
+
 accuracy = mean(Y_pred == Y_true);
 
-fprintf('\nKonfusionsmatrix fuer bestes Modell bei Schwellenwert 0.5:\n');
+fprintf('\nKonfusionsmatrix bei Schwellenwert 0.5:\n');
 
-ConfusionTable = array2table(confMat, ...
-    'VariableNames', {'Pred_0','Pred_1'}, ...
-    'RowNames', {'True_0','True_1'});
+ConfusionTable = array2table( ...
+    confMat, ...
+    'VariableNames', {'Pred_0', 'Pred_1'}, ...
+    'RowNames', {'True_0', 'True_1'});
 
 disp(ConfusionTable);
 
-writetable(ConfusionTable, fullfile(outDir, 'confusion_matrix_best_buffer_based_logistic_model.xlsx'), 'WriteRowNames', true);
-
 fprintf('Accuracy bei Schwellenwert 0.5: %.4f\n', accuracy);
 
-fig = figure('Color','w','Position',[100 100 850 650]);
+
+% Konfusionsmatrix als Abbildung
+fig = figure( ...
+    'Color', 'w', ...
+    'Position', [100 100 850 650]);
+
 cm = confusionchart(Y_true, Y_pred);
+
 cm.Title = 'Confusion Matrix - threshold 0.5';
 cm.RowSummary = 'row-normalized';
 cm.ColumnSummary = 'column-normalized';
 
-exportgraphics(fig, fullfile(outDir, ...
+exportgraphics( ...
+    fig, ...
+    fullfile(outDir, ...
     'confusion_matrix_best_buffer_based_model.png'), ...
     'Resolution', 300);
+
 close(fig);
 
-%% 6) Raster auswaehlen
 
-fprintf('\nBitte Slope-Raster auswaehlen.\n');
-slopeFile = pickRaster('Slope-Raster auswaehlen');
+%% 10) Prädiktorraster auswählen
 
-fprintf('\nBitte Mid-Slope-Position-/MSP-Raster auswaehlen.\n');
-mspFile = pickRaster('MSP-/Mid-Slope-Position-Raster auswaehlen');
+fprintf('\nBitte Slope-Raster auswählen.\n');
+slopeFile = pickRaster('Slope-Raster auswählen');
 
-fprintf('\nBitte TWI-Raster auswaehlen.\n');
-twiFile = pickRaster('TWI-Raster auswaehlen');
+fprintf('\nBitte Mid-Slope-Position-Raster auswählen.\n');
+mspFile = pickRaster('Mid-Slope-Position-Raster auswählen');
 
-fprintf('\nBitte Flow-Accumulation-Raster auswaehlen.\n');
-flowFile = pickRaster('Flow-Accumulation-Raster auswaehlen');
+fprintf('\nBitte TWI-Raster auswählen.\n');
+twiFile = pickRaster('TWI-Raster auswählen');
 
-fprintf('\nBitte Valley-Depth-Raster auswaehlen.\n');
-valleyFile = pickRaster('Valley-Depth-Raster auswaehlen');
+fprintf('\nBitte Flow-Accumulation-Raster auswählen.\n');
+flowFile = pickRaster('Flow-Accumulation-Raster auswählen');
 
-fprintf('\nBitte VRM-Raster auswaehlen.\n');
-vrmFile = pickRaster('VRM-Raster auswaehlen');
+fprintf('\nBitte Valley-Depth-Raster auswählen.\n');
+valleyFile = pickRaster('Valley-Depth-Raster auswählen');
 
-fprintf('\nBitte Plan-Curvature-Raster auswaehlen.\n');
-planFile = pickRaster('Plan-Curvature-Raster auswaehlen');
+fprintf('\nBitte VRM-Raster auswählen.\n');
+vrmFile = pickRaster('VRM-Raster auswählen');
 
-fprintf('\nBitte Profile-Curvature-Raster auswaehlen.\n');
-profFile = pickRaster('Profile-Curvature-Raster auswaehlen');
+fprintf('\nBitte Plan-Curvature-Raster auswählen.\n');
+planFile = pickRaster('Plan-Curvature-Raster auswählen');
 
-fprintf('\nBitte Convergence-Index-Raster auswaehlen.\n');
-convFile = pickRaster('Convergence-Index-Raster auswaehlen');
+fprintf('\nBitte Profile-Curvature-Raster auswählen.\n');
+profFile = pickRaster('Profile-Curvature-Raster auswählen');
 
-%% 7) Raster einlesen
+fprintf('\nBitte Convergence-Index-Raster auswählen.\n');
+convFile = pickRaster('Convergence-Index-Raster auswählen');
+
+
+%% 11) Raster einlesen
 
 [Slope, Rgeo] = readgeoraster(slopeFile);
-MSP      = readgeoraster(mspFile);
-TWI      = readgeoraster(twiFile);
-Flow     = readgeoraster(flowFile);
-Valley   = readgeoraster(valleyFile);
-VRM      = readgeoraster(vrmFile);
+
+MSP = readgeoraster(mspFile);
+TWI = readgeoraster(twiFile);
+Flow = readgeoraster(flowFile);
+Valley = readgeoraster(valleyFile);
+VRM = readgeoraster(vrmFile);
 PlanCurv = readgeoraster(planFile);
 ProfCurv = readgeoraster(profFile);
-ConvIdx  = readgeoraster(convFile);
+ConvIdx = readgeoraster(convFile);
 
-Slope    = single(Slope);
-MSP      = single(MSP);
-TWI      = single(TWI);
-Flow     = single(Flow);
-Valley   = single(Valley);
-VRM      = single(VRM);
+
+Slope = single(Slope);
+MSP = single(MSP);
+TWI = single(TWI);
+Flow = single(Flow);
+Valley = single(Valley);
+VRM = single(VRM);
 PlanCurv = single(PlanCurv);
 ProfCurv = single(ProfCurv);
-ConvIdx  = single(ConvIdx);
+ConvIdx = single(ConvIdx);
 
-allRasters = {Slope, MSP, TWI, Flow, Valley, VRM, PlanCurv, ProfCurv, ConvIdx};
-rasterNames = {'SLOPE','MID','TWI','FLOW','VALLEY','VRM','PLAN','PROF','CONV'};
 
-%% 8) Rastergroessen pruefen
+allRasters = { ...
+    Slope, ...
+    MSP, ...
+    TWI, ...
+    Flow, ...
+    Valley, ...
+    VRM, ...
+    PlanCurv, ...
+    ProfCurv, ...
+    ConvIdx};
+
+rasterNames = { ...
+    'SLOPE', ...
+    'MID', ...
+    'TWI', ...
+    'FLOW', ...
+    'VALLEY', ...
+    'VRM', ...
+    'PLAN', ...
+    'PROF', ...
+    'CONV'};
+
+
+%% 12) Rastergrößen prüfen
 
 refSize = size(Slope);
 
 for i = 1:numel(allRasters)
+
     if ~isequal(size(allRasters{i}), refSize)
-        error('Raster %s hat eine andere Groesse (%d x %d) als Slope (%d x %d).', ...
-            rasterNames{i}, size(allRasters{i},1), size(allRasters{i},2), refSize(1), refSize(2));
+
+        error( ...
+            'Raster %s hat eine andere Größe (%d x %d) als Slope (%d x %d).', ...
+            rasterNames{i}, ...
+            size(allRasters{i}, 1), ...
+            size(allRasters{i}, 2), ...
+            refSize(1), ...
+            refSize(2));
+
     end
+
 end
 
-fprintf('\nAlle Raster haben dieselbe Groesse.\n');
+fprintf('\nAlle Raster haben dieselbe Größe.\n');
 
-%% 9) NoData-Pruefung der Praediktorraster
+
+%% 13) Ungültige Rasterzellen bestimmen
 
 invalid = false(refSize);
 
@@ -377,51 +407,105 @@ for i = 1:numel(allRasters)
     X = allRasters{i};
 
     invalid = invalid | isnan(X) | isinf(X);
+
+    % Typische NoData-Werte
     invalid = invalid | X <= -9990;
+
 end
 
-% Flow darf für log10(Flow + 1) nicht negativ sein
+% Flow Accumulation muss für log10(Flow + 1) >= 0 sein
 invalid = invalid | Flow < 0;
 
-fprintf('\nUngueltige Pixel laut Maske: %.2f %%\n', ...
+fprintf('\nUngültige Pixel laut Maske: %.2f %%\n', ...
     100 * nnz(invalid) / numel(invalid));
-invalid_base = invalid;
-%% 10) Raster als z-Werte standardisieren
 
-Z.SLOPE = zscoreRaster(Slope, standardizationStats, 'SLOPE');
+invalid_base = invalid;
+
+
+%% 14) Raster mit den Stichprobenparametern standardisieren
+
+Z.SLOPE = zscoreRaster( ...
+    Slope, ...
+    standardizationStats, ...
+    'SLOPE');
+
 clear Slope
 
-Z.MID = zscoreRaster(MSP, standardizationStats, 'MID');
+
+Z.MID = zscoreRaster( ...
+    MSP, ...
+    standardizationStats, ...
+    'MID');
+
 clear MSP
 
-Z.TWI = zscoreRaster(TWI, standardizationStats, 'TWI');
+
+Z.TWI = zscoreRaster( ...
+    TWI, ...
+    standardizationStats, ...
+    'TWI');
+
 clear TWI
 
+
 Flow_log = single(log10(single(Flow) + 1));
-Z.FLOW_LOG = zscoreRaster(Flow_log, standardizationStats, 'FLOW_LOG');
+
+Z.FLOW_LOG = zscoreRaster( ...
+    Flow_log, ...
+    standardizationStats, ...
+    'FLOW_LOG');
+
 clear Flow Flow_log
 
-Z.VALLEY = zscoreRaster(Valley, standardizationStats, 'VALLEY');
+
+Z.VALLEY = zscoreRaster( ...
+    Valley, ...
+    standardizationStats, ...
+    'VALLEY');
+
 clear Valley
 
-Z.VRM = zscoreRaster(VRM, standardizationStats, 'VRM');
+
+Z.VRM = zscoreRaster( ...
+    VRM, ...
+    standardizationStats, ...
+    'VRM');
+
 clear VRM
 
-Z.PLAN = zscoreRaster(PlanCurv, standardizationStats, 'PLAN');
+
+Z.PLAN = zscoreRaster( ...
+    PlanCurv, ...
+    standardizationStats, ...
+    'PLAN');
+
 clear PlanCurv
 
-Z.PROF = zscoreRaster(ProfCurv, standardizationStats, 'PROF');
+
+Z.PROF = zscoreRaster( ...
+    ProfCurv, ...
+    standardizationStats, ...
+    'PROF');
+
 clear ProfCurv
 
-Z.CONV = zscoreRaster(ConvIdx, standardizationStats, 'CONV');
+
+Z.CONV = zscoreRaster( ...
+    ConvIdx, ...
+    standardizationStats, ...
+    'CONV');
+
 clear ConvIdx
 
-%% 11) Farbskala
+
+%% 15) Farbskalen
 
 cmapFine = blueYellowRed(256);
 cmapClass = blueYellowRed(5);
 
-%% 12) Für jedes der 9 Modelle eine Karte erzeugen
+
+%% 16) Modellkarten erzeugen
+
 for k = 1:nModels
 
     mdl = models{k};
@@ -430,10 +514,14 @@ for k = 1:nModels
     coefTable = mdl.Coefficients;
     coefNames = string(coefTable.Properties.RowNames);
 
-    b0 = coefTable.Estimate(coefNames == "(Intercept)");
+    % Intercept
+    b0 = coefTable.Estimate( ...
+        coefNames == "(Intercept)");
 
     eta = b0 * ones(refSize);
 
+
+    % Linearen Prädiktor aus standardisierten Rastern berechnen
     for j = 1:numel(preds)
 
         p = preds{j};
@@ -441,34 +529,35 @@ for k = 1:nModels
         idx = coefNames == string(p);
 
         if ~any(idx)
-            error('Koeffizient fuer %s in Model_%d nicht gefunden.', p, k);
+            error( ...
+                'Koeffizient für %s in Modell %d nicht gefunden.', ...
+                p, k);
         end
 
         b = coefTable.Estimate(idx);
 
         eta = eta + b .* Z.(p);
+
     end
 
+
+    % Logistische Transformation
     P = 1 ./ (1 + exp(-eta));
 
-    invalid_model = invalid_base;
+    P(invalid_base) = NaN;
 
-P(invalid_model) = NaN;
     P(P < 0) = 0;
     P(P > 1) = 1;
 
-    P = 1 ./ (1 + exp(-eta));
 
-    invalid_model = invalid_base;
+    %% Rasterauswertung des besten Modells
 
-    P(invalid_model) = NaN;
-    P(P < 0) = 0;
-    P(P > 1) = 1;
-
-    %% Rasterauswertung nur fuer das beste Buffermodell
     if k == bestIdx
 
-        valid = ~isnan(P) & isfinite(P) & isfinite(eta);
+        valid = ...
+            ~isnan(P) & ...
+            isfinite(P) & ...
+            isfinite(eta);
 
         P_valid = double(P(valid));
         eta_valid = double(eta(valid));
@@ -476,8 +565,11 @@ P(invalid_model) = NaN;
         eta_threshold_075 = log(0.75 / (1 - 0.75));
 
         nValid = numel(P_valid);
+
         nHigh075 = sum(P_valid >= 0.75);
-        shareHigh075 = 100 * mean(P_valid >= 0.75);
+
+        shareHigh075 = ...
+            100 * mean(P_valid >= 0.75);
 
         rasterEtaSummary = table( ...
             nValid, ...
@@ -492,177 +584,275 @@ P(invalid_model) = NaN;
             prctile(eta_valid, 95), ...
             max(eta_valid), ...
             'VariableNames', { ...
-            'NValidPixels', ...
-            'N_P_GE_075', ...
-            'Share_P_GE_075_Percent', ...
-            'EtaThreshold_P075', ...
-            'EtaMinimum', ...
-            'EtaQ1', ...
-            'EtaMedian', ...
-            'EtaMean', ...
-            'EtaQ3', ...
-            'EtaP95', ...
-            'EtaMaximum'});
+                'NValidPixels', ...
+                'N_P_GE_075', ...
+                'Share_P_GE_075_Percent', ...
+                'EtaThreshold_P075', ...
+                'EtaMinimum', ...
+                'EtaQ1', ...
+                'EtaMedian', ...
+                'EtaMean', ...
+                'EtaQ3', ...
+                'EtaP95', ...
+                'EtaMaximum'});
 
         fprintf('\nRasterauswertung des besten Buffermodells:\n');
         disp(rasterEtaSummary);
 
-        writetable(rasterEtaSummary, fullfile(outDir, ...
+        writetable( ...
+            rasterEtaSummary, ...
+            fullfile(outDir, ...
             'raster_eta_summary_best_buffer_based_model.xlsx'));
+
     end
 
-    fprintf('\nModel_%02d Kartenkontrolle:\n', k);
-   %% GeoTIFF-Export fuer QGIS: nur Model 4 und Model 9
-    % Vollstaendige Wahrscheinlichkeitskarte:
-    % Wertebereich 0 bis 1; NaN bleibt ausserhalb/ungueltig.
-    % EPSG:25832 passt zu deinem Ahrtal-Projekt in UTM 32N.
+
+    %% GeoTIFFs für Modell 4 und Modell 9
 
     if ismember(k, [4 9])
 
         P_out = single(P);
 
-        geotiffwrite(fullfile(outDir, ...
+        % Vollständige Wahrscheinlichkeit 0 bis 1
+        geotiffwrite( ...
+            fullfile(outDir, ...
             sprintf('buffer_model_%02d_probability_full.tif', k)), ...
-            P_out, Rgeo, 'CoordRefSysCode', 25832);
+            P_out, ...
+            Rgeo, ...
+            'CoordRefSysCode', 25832);
 
-        % Zusaetzlich: nur Hochwahrscheinlichkeitsbereich 0.75 bis 1.0.
-        % Alles darunter wird NaN und kann in QGIS transparent dargestellt werden.
 
+        % Nur Bereich mit p >= 0.75
         P_high = P_out;
+
         P_high(P_high < 0.75) = NaN;
 
-        geotiffwrite(fullfile(outDir, ...
+        geotiffwrite( ...
+            fullfile(outDir, ...
             sprintf('buffer_model_%02d_probability_high_075_100.tif', k)), ...
-            P_high, Rgeo, 'CoordRefSysCode', 25832);
+            P_high, ...
+            Rgeo, ...
+            'CoordRefSysCode', 25832);
 
         clear P_out P_high
+
     end
 
-   fprintf('\nModel_%02d Kartenkontrolle:\n', k);
-fprintf('NaN-Anteil P: %.2f %%\n', 100 * sum(isnan(P(:))) / numel(P));
-fprintf('Minimum P: %.4f\n', min(P(:), [], 'omitnan'));
-fprintf('Maximum P: %.4f\n', max(P(:), [], 'omitnan'));
-   fprintf('\nModel_%02d Kartenkontrolle:\n', k);
-fprintf('NaN-Anteil P: %.2f %%\n', 100 * sum(isnan(P(:))) / numel(P));
-fprintf('Minimum P: %.4f\n', min(P(:), [], 'omitnan'));
-fprintf('Maximum P: %.4f\n', max(P(:), [], 'omitnan'));
 
-    %% Klassifizierte Karte
+    %% Kontrolle der modellierten Wahrscheinlichkeiten
+
+    fprintf('\nModell %02d Kartenkontrolle:\n', k);
+
+    fprintf( ...
+        'NaN-Anteil P: %.2f %%\n', ...
+        100 * sum(isnan(P(:))) / numel(P));
+
+    fprintf( ...
+        'Minimum P: %.4f\n', ...
+        min(P(:), [], 'omitnan'));
+
+    fprintf( ...
+        'Maximum P: %.4f\n', ...
+        max(P(:), [], 'omitnan'));
+
+
+    %% Klassifizierte Wahrscheinlichkeit
+
     edges = [0 0.2 0.4 0.6 0.8 1.000001];
+
     Pclass = discretize(P, edges);
+
     Pclass(isnan(P)) = NaN;
 
-    %% PNG fein abgestuft, 0 bis 1
-    fig = figure('Color','w','Position',[100 100 1200 800]);
+
+    %% Fein abgestufte Modellkarte
+
+    fig = figure( ...
+        'Color', 'w', ...
+        'Position', [100 100 1200 800]);
+
     h = imagesc(P, [0 1]);
+
     set(gca, 'Color', [1 1 1]);
-    set(h, 'AlphaData', ~isnan(P));
+
+    set(h, ...
+        'AlphaData', ...
+        ~isnan(P));
+
     axis image off;
+
     colormap(cmapFine);
 
     cb = colorbar;
+
     cb.Ticks = [0 0.25 0.5 0.75 1];
-    cb.TickLabels = {'0','0.25','0.50','0.75','1'};
+
+    cb.TickLabels = { ...
+        '0', ...
+        '0.25', ...
+        '0.50', ...
+        '0.75', ...
+        '1'};
+
     ylabel(cb, 'modellierte Wahrscheinlichkeit p');
 
-    title({sprintf('Model_%d: logistische Regression der Buffermethode', k), ...
-           'fein abgestufte modellierte Wahrscheinlichkeit'}, ...
-           'Interpreter','none');
+    title( ...
+        {sprintf( ...
+            'Model_%d: logistische Regression der Buffermethode', k), ...
+         'fein abgestufte modellierte Wahrscheinlichkeit'}, ...
+        'Interpreter', 'none');
 
-    exportgraphics(fig, fullfile(outDir, ...
-        sprintf('buffer_model_%02d_probability_fine_blue_yellow_red.png', k)), ...
+    exportgraphics( ...
+        fig, ...
+        fullfile(outDir, ...
+        sprintf( ...
+        'buffer_model_%02d_probability_fine_blue_yellow_red.png', k)), ...
         'Resolution', 300);
+
     close(fig);
 
-    %% PNG 5 Klassen
-    fig = figure('Color','w','Position',[100 100 1200 800]);
+
+    %% Klassifizierte Modellkarte
+
+    fig = figure( ...
+        'Color', 'w', ...
+        'Position', [100 100 1200 800]);
+
     h = imagesc(Pclass);
-    set(h, 'AlphaData', ~isnan(Pclass));
+
+    set(h, ...
+        'AlphaData', ...
+        ~isnan(Pclass));
+
     axis image off;
+
     colormap(cmapClass);
+
     clim([1 5]);
 
     cb = colorbar;
+
     cb.Ticks = 1:5;
-    cb.TickLabels = {'0.0-0.2','0.2-0.4','0.4-0.6','0.6-0.8','0.8-1.0'};
+
+    cb.TickLabels = { ...
+        '0.0-0.2', ...
+        '0.2-0.4', ...
+        '0.4-0.6', ...
+        '0.6-0.8', ...
+        '0.8-1.0'};
+
     ylabel(cb, 'p-Klasse');
 
-    title({sprintf('Model_%d: logistische Regression der Buffermethode', k), ...
-           'klassifizierte modellierte Wahrscheinlichkeit'}, ...
-           'Interpreter','none');
+    title( ...
+        {sprintf( ...
+            'Model_%d: logistische Regression der Buffermethode', k), ...
+         'klassifizierte modellierte Wahrscheinlichkeit'}, ...
+        'Interpreter', 'none');
 
-    exportgraphics(fig, fullfile(outDir, ...
-        sprintf('buffer_model_%02d_probability_classes_5_blue_yellow_red.png', k)), ...
+    exportgraphics( ...
+        fig, ...
+        fullfile(outDir, ...
+        sprintf( ...
+        'buffer_model_%02d_probability_classes_5_blue_yellow_red.png', k)), ...
         'Resolution', 300);
+
     close(fig);
 
 end
 
+
 fprintf('\nFertig. Ergebnisse liegen in:\n%s\n', outDir);
 
-%% ===== Hilfsfunktionen =====
+
+%% Lokale Hilfsfunktionen
+
 
 function f = pickRaster(titleText)
 
-    [name, path] = uigetfile({'*.tif;*.tiff','GeoTIFF (*.tif, *.tiff)'}, titleText);
+    [name, path] = uigetfile( ...
+        {'*.tif;*.tiff', 'GeoTIFF (*.tif, *.tiff)'}, ...
+        titleText);
 
     if isequal(name, 0)
-        error('Keine Datei ausgewaehlt: %s', titleText);
+        error('Keine Datei ausgewählt: %s', titleText);
     end
 
     f = fullfile(path, name);
+
 end
+
 
 function T = makeModelTable(Traw, yValue, groupName)
 
     T = table();
 
     T.Y = yValue * ones(height(Traw), 1);
-    T.GROUP = repmat(string(groupName), height(Traw), 1);
 
-    T.SLOPE  = toNumeric(Traw.(findVar(Traw, {'SLOPE_1','SLOPE1','SLOPE'})));
-    T.MID    = toNumeric(Traw.(findVar(Traw, {'MID_1','MID1','MSP_1','MSP1','MID','MSP'})));
-    T.TWI    = toNumeric(Traw.(findVar(Traw, {'TWI_1','TWI1','TWI'})));
-    T.FLOW   = toNumeric(Traw.(findVar(Traw, {'FLOW_1','FLOW1','FLOWACC','FLOWACCUMULATION','FLOW'})));
-    T.VALLEY = toNumeric(Traw.(findVar(Traw, {'VALLEY_1','VALLEY1','VALLEY'})));
-    T.VRM    = toNumeric(Traw.(findVar(Traw, {'VRM_1','VRM1','VRM'})));
-    T.PLAN   = toNumeric(Traw.(findVar(Traw, {'PLAN_1','PLAN1','PLAN'})));
-    T.PROF   = toNumeric(Traw.(findVar(Traw, {'PROF_1','PROF1','PROF'})));
-    T.CONV   = toNumeric(Traw.(findVar(Traw, {'CONV_1','CONV1','CONV'})));
+    T.GROUP = repmat( ...
+        string(groupName), ...
+        height(Traw), ...
+        1);
+
+    T.SLOPE = toNumeric( ...
+        Traw.(findVar(Traw, 'SLOPE_1')));
+
+    T.MID = toNumeric( ...
+        Traw.(findVar(Traw, 'MID_1')));
+
+    T.TWI = toNumeric( ...
+        Traw.(findVar(Traw, 'TWI_1')));
+
+    T.FLOW = toNumeric( ...
+        Traw.(findVar(Traw, 'FLOW_1')));
+
+    T.VALLEY = toNumeric( ...
+        Traw.(findVar(Traw, 'VALLEY_1')));
+
+    T.VRM = toNumeric( ...
+        Traw.(findVar(Traw, 'VRM_1')));
+
+    T.PLAN = toNumeric( ...
+        Traw.(findVar(Traw, 'PLAN_1')));
+
+    T.PROF = toNumeric( ...
+        Traw.(findVar(Traw, 'PROF_1')));
+
+    T.CONV = toNumeric( ...
+        Traw.(findVar(Traw, 'CONV_1')));
+
 end
 
-function varName = findVar(Traw, patterns)
+
+function varName = findVar(Traw, wanted)
 
     names = string(Traw.Properties.VariableNames);
-    cleanNames = upper(regexprep(names, '[^A-Za-z0-9]', ''));
 
-    for p = 1:numel(patterns)
+    cleanNames = upper( ...
+        regexprep(names, '[^A-Za-z0-9]', ''));
 
-        pat = upper(regexprep(string(patterns{p}), '[^A-Za-z0-9]', ''));
+    cleanWanted = upper( ...
+        regexprep(string(wanted), '[^A-Za-z0-9]', ''));
 
-        exactIdx = find(cleanNames == pat, 1, 'first');
+    idx = find( ...
+        cleanNames == cleanWanted, ...
+        1, ...
+        'first');
 
-        if ~isempty(exactIdx)
-            varName = names(exactIdx);
-            return;
-        end
+    if isempty(idx)
 
-        containsIdx = find(contains(cleanNames, pat), 1, 'first');
+        error( ...
+            'Spalte "%s" nicht gefunden. Vorhandene Spalten: %s', ...
+            wanted, ...
+            strjoin(names, ', '));
 
-        if ~isempty(containsIdx)
-            varName = names(containsIdx);
-            return;
-        end
     end
 
-    error('Keine passende Spalte gefunden fuer Muster: %s', strjoin(string(patterns), ', '));
+    varName = names(idx);
+
 end
 
-function x = toNumeric(x)
 
-    if isnumeric(x)
-        return;
-    end
+function x = toNumeric(x)
 
     if iscell(x)
         x = string(x);
@@ -671,14 +861,24 @@ function x = toNumeric(x)
     if isstring(x) || ischar(x) || iscategorical(x)
         x = str2double(string(x));
     end
+
+    x = double(x(:));
+
 end
+
 
 function Zout = zscoreRaster(X, S, paramName)
 
-    idx = strcmp(string(S.Param), paramName);
+    idx = strcmp( ...
+        string(S.Param), ...
+        paramName);
 
     if ~any(idx)
-        error('Parameter %s nicht in Standardisierungstabelle gefunden.', paramName);
+
+        error( ...
+            'Parameter %s nicht in Standardisierungstabelle gefunden.', ...
+            paramName);
+
     end
 
     mu = single(S.Mean(idx));
@@ -687,8 +887,11 @@ function Zout = zscoreRaster(X, S, paramName)
     X = single(X);
 
     Zout = (X - mu) ./ sd;
+
     Zout = single(Zout);
+
 end
+
 
 function cmap = blueYellowRed(n)
 
@@ -702,14 +905,16 @@ function cmap = blueYellowRed(n)
     red    = [0.90 0.00 0.00];
 
     x = [0 0.35 0.65 1];
+
     r = [blue(1) cyan(1) yellow(1) red(1)];
     g = [blue(2) cyan(2) yellow(2) red(2)];
     b = [blue(3) cyan(3) yellow(3) red(3)];
 
     xi = linspace(0, 1, n);
 
-    cmap = [interp1(x, r, xi)', ...
-            interp1(x, g, xi)', ...
-            interp1(x, b, xi)'];
-end
+    cmap = [ ...
+        interp1(x, r, xi)', ...
+        interp1(x, g, xi)', ...
+        interp1(x, b, xi)'];
 
+end
