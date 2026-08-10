@@ -6,34 +6,33 @@
 
 clear; clc; close all;
 
-%% 1) Pfade
+%% 1) Daten- und Ausgabeordner
 dataDir = 'C:\Users\simon\BA Ahrtal 2026';
-outDir = fullfile(dataDir, 'plots_punktvergleich_3gruppen_ohne_fallback');
+outDir = fullfile(dataDir, 'plots_boxplotvergleich');
 
 if ~exist(outDir, 'dir')
     mkdir(outDir);
 end
 
-%% 2) Dateinamen
-% Diese drei Excel-Dateien müssen jeweils alle relevanten Spalten enthalten:
-% SLOPE_1, VRM_1, PLAN_1, PROF_1, MID_1, VALLEY_1, CONV_1, TWI_1, FLOW_1.
-%
-% Falls deine Dateien anders heißen, ändere nur diese drei Zeilen.
+%% 2) Eingabedateien
+% Verwendete Punktdatensätze für KFV und die beiden Referenzmethoden.
 
 files.kfvPoints          = 'Klassenstatistik KFV Pixelwerte SAGA 25 K.xlsx';
 files.randomBufferPoints = 'Klassenstatistik Random Buffer Pixelwerte SAGA 25 K.xlsx';
 files.randomPoints       = 'Klassenstatistik Random Points Pixelwerte SAGA 25 K.xlsx';
+
+files.kfvPoints          = 'Klassenstatistik KFV Pixelwerte SAGA 25 K.xlsx';
+files.randomBufferPoints = 'Klassenstatistik Random Buffer Pixelwerte SAGA 25 K.xlsx';
+files.randomPoints       = 'Klassenstatistik Random Points Pixelwerte SAGA 25 K.xlsx';
+
 %% 3) Tabellen einlesen
-% Es werden nur diese drei Tabellen gelesen. Keine Zonalstatistik, keine Fallback-Dateien.
+% Es werden nur diese drei Tabellen eingelesen. 
 
 T_kfv          = readAnyTable(dataDir, files.kfvPoints);
 T_randomBuffer = readAnyTable(dataDir, files.randomBufferPoints);
 T_randomPoints = readAnyTable(dataDir, files.randomPoints);
 
-%% 4) Parameterliste
-% Reihenfolge entsprechend der Attributtabelle:
-% Slope, VRM, Plan Curvature, Profile Curvature, MID, Valley Depth,
-% Convergence Index, TWI, Flow Accumulation.
+%% 4) Parameterdefinitionen
 
 plotSpecs = {
     'SLOPE',  'Slope (°)',                       'SLOPE_1',  false;
@@ -47,7 +46,7 @@ plotSpecs = {
     'FLOW',   'log10(Flow Accumulation + 1)',     'FLOW_1',   true
 };
 
-%% 5) Einzelne Boxplots erzeugen und Daten für Übersichtsplot speichern
+%% 5) Boxplots für alle Geländeparameter
 
 plotData = struct();
 
@@ -58,19 +57,18 @@ for i = 1:size(plotSpecs, 1)
     varName = string(plotSpecs{i, 3});
     useLog  = plotSpecs{i, 4};
 
-    % Alle Werte kommen direkt aus den drei Klassenstatistik-Tabellen.
     kfvValues        = getNumericColExact(T_kfv, varName);
     randBufferValues = getNumericColExact(T_randomBuffer, varName);
     randPointValues  = getNumericColExact(T_randomPoints, varName);
 
-    % Optional log10(x+1) für Valley Depth und Flow Accumulation
+    % Transformation für Valley Depth und Flow Accumulation
     if useLog
         kfvValues        = log10(kfvValues + 1);
         randBufferValues = log10(randBufferValues + 1);
         randPointValues  = log10(randPointValues + 1);
     end
 
-    % Ungültige Werte entfernen
+    % Fehlende und ungültige Werte entfernen
     kfvValues        = validNumeric(kfvValues);
     randBufferValues = validNumeric(randBufferValues);
     randPointValues  = validNumeric(randPointValues);
@@ -81,7 +79,7 @@ for i = 1:size(plotSpecs, 1)
     plotThreeGroupBox(kfvValues, randBufferValues, randPointValues, ...
         titleTxt, char(yLabel), outBase, true);
 
-    % Für spätere 2x2-Übersichtsabbildung speichern
+    % Werte für die gemeinsame Übersicht speichern
     plotData.(char(code)).kfv        = kfvValues;
     plotData.(char(code)).buffer     = randBufferValues;
     plotData.(char(code)).points     = randPointValues;
@@ -90,14 +88,13 @@ for i = 1:size(plotSpecs, 1)
 
 end
 
-%% 6) 2x2-Übersichtsabbildung der vier wichtigsten Parameter
-% Die vier Parameter können bei Bedarf hier geändert werden.
-% Aktuell: Slope, TWI, Mid-Slope Position und Flow Accumulation.
+%% 6) Übersicht der vier Hauptparameter
 
 highlightCodes = {'SLOPE', 'TWI', 'MID', 'FLOW'};
 plotFourPanelBoxplots(plotData, highlightCodes, ...
     fullfile(outDir, '00_uebersicht_4_wichtigste_parameter'));
-%% 7) Kennwerte für die vier Hauptparameter ausgeben
+
+%% 7) Deskriptive Kennwerte der vier Hauptparameter
 
 summary4 = makeSummaryTable(plotData, highlightCodes);
 
@@ -106,6 +103,7 @@ disp(summary4);
 
 writetable(summary4, fullfile(outDir, 'summary_4_wichtigste_parameter.xlsx'));
 writetable(summary4, fullfile(outDir, 'summary_4_wichtigste_parameter.csv'));
+
 fprintf('\nFertig. Alle Plots wurden gespeichert in:\n%s\n', outDir);
 
 %% Lokale Hilfsfunktionen
@@ -176,9 +174,7 @@ function T = readAnyTable(dataDir, fileName)
 end
 
 function x = getNumericColExact(T, wanted)
-    % Exakte Spaltensuche nach Normalisierung.
-    % Das ist bewusst kein Fallback: VRM_11 wird nicht automatisch als VRM_1 akzeptiert.
-    % Wenn QGIS Spalten wie VRM_11 erzeugt hat, müssen sie vorher in VRM_1 umbenannt werden.
+    % Liest die angegebene Parameterspalte als numerischen Vektor.
 
     v = findExactVar(T, wanted);
     x = T.(v);
@@ -202,13 +198,12 @@ function vname = findExactVar(T, wanted)
     idx = find(normNames == normWanted, 1);
 
     if isempty(idx)
-        error(['Spalte nicht exakt gefunden: %s.\n' ...
-               'Bitte prüfe die Excel-Spaltennamen. Erwartet werden unter anderem: ', ...
-               'SLOPE_1, VRM_1, PLAN_1, PROF_1, MID_1, VALLEY_1, CONV_1, TWI_1, FLOW_1.\n' ...
-               'Vorhandene Spalten: %s'], wanted, strjoin(names, ', '));
+        error('Spalte "%s" nicht gefunden. Vorhandene Spalten: %s', ...
+            wanted, strjoin(names, ', '));
     end
 
     vname = T.Properties.VariableNames{idx};
+
 end
 
 function out = normalizeVarNames(in)
