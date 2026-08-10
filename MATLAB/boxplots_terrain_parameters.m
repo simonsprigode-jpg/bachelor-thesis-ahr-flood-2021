@@ -7,8 +7,14 @@
 clear; clc; close all;
 
 %% 1) Daten- und Ausgabeordner
-dataDir = 'C:\Users\simon\BA Ahrtal 2026';
-outDir = fullfile(dataDir, 'plots_boxplotvergleich');
+
+dataDir = uigetdir(pwd, 'Ordner mit den Eingangsdaten auswählen');
+
+if isequal(dataDir, 0)
+    error('Kein Datenordner ausgewählt.');
+end
+
+outDir = fullfile(dataDir, 'plots_boxplots');
 
 if ~exist(outDir, 'dir')
     mkdir(outDir);
