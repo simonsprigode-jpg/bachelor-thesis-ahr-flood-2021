@@ -1,20 +1,8 @@
-%% Ahrtal KFV: Punktbasierter Vergleich von KFV, Random-Buffer und Random-Points
-% Ziel:
-% Pro Parameter ein Diagramm mit drei Boxplots:
-%   1) KFV: abgegriffene Rasterwerte innerhalb der kartierten flutinduzierten Veränderungsflächen
-%   2) Random-Buffer: abgegriffene Rasterwerte innerhalb der Random-Bufferflächen
-%   3) Random-Points: abgegriffene Rasterwerte an den Random-Point-Referenzen
-%
-% Wichtig:
-% - Es werden nur drei Klassenstatistik-Tabellen eingelesen.
-% - Es gibt keine Fallback-Dateien für TWI oder Flow mehr.
-% - Alle drei Tabellen müssen die gleichen relevanten Spalten enthalten.
-% - SK_1 bzw. Slope-Klassen werden nicht verwendet.
-% - Valley Depth und Flow Accumulation werden mit log10(x+1) dargestellt.
-% - Ausreißerpunkte bleiben sichtbar.
-% - Roter Punkt = Mittelwert.
-% - Zusätzlich wird eine 2x2-Übersichtsabbildung für die vier wichtigsten
-%   Parameter Slope, TWI, Mid-Slope Position und Flow Accumulation erzeugt.
+%% Vergleich von KFV, Random-Buffer und Random-Points
+% Vergleich der abgegriffenen Rasterwerte für die 9 Geländeparameter aus SAGA.
+% Valley Depth und Flow Accumulation werden als log10(x+1) dargestellt.
+% Zusätzlich werden eine Übersicht der vier Hauptparameter und
+% deren deskriptive Kennwerte ausgegeben.
 
 clear; clc; close all;
 
