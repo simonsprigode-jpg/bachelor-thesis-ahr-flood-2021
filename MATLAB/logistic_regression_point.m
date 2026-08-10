@@ -33,20 +33,20 @@ fprintf('\nAusgabeordner:\n%s\n', outDir);
 
 %% 1) Tabellen auswaehlen
 
-fprintf('\nBitte Hangpixel-1000-Tabelle auswaehlen.\n');
+fprintf('\nBitte KFV-1000-Tabelle auswaehlen.\n');
 [hangName, hangPath] = uigetfile({'*.xlsx;*.xls','Excel-Dateien (*.xlsx, *.xls)'}, ...
-    'Hangpixel-1000-Tabelle auswaehlen');
+    'KFV-1000-Tabelle auswaehlen');
 
 if isequal(hangName, 0)
-    error('Keine Hangpixel-Tabelle ausgewaehlt.');
+    error('Keine KFV-Tabelle ausgewaehlt.');
 end
 
-fprintf('\nBitte Random-Ref-/Random-1000-Tabelle auswaehlen.\n');
+fprintf('\nBitte Random-Ref-/Randompoints-1000-Tabelle auswaehlen.\n');
 [randomName, randomPath] = uigetfile({'*.xlsx;*.xls','Excel-Dateien (*.xlsx, *.xls)'}, ...
-    'Random-Ref-/Random-1000-Tabelle auswaehlen');
+    'Random-Ref-/Randompoints-1000-Tabelle auswaehlen');
 
 if isequal(randomName, 0)
-    error('Keine Random-Tabelle ausgewaehlt.');
+    error('Keine Randompoints-Tabelle ausgewaehlt.');
 end
 
 hangFile = fullfile(hangPath, hangName);
@@ -121,7 +121,9 @@ end
 
 fprintf('\nStandardisierungswerte:\n');
 disp(standardizationStats);
-
+% Standardisierungswerte speichern
+writetable(standardizationStats, fullfile(outDir, ...
+    'standardization_values_point_logistic_regression.xlsx'));
 %% 4) 9 logistische Modelle fitten und AIC vergleichen
 
 nModels = numel(predictor_order);
@@ -170,7 +172,9 @@ end
 results = table(ModelName, NumPredictors, Formula, AIC, BIC, Deviance);
 results.DeltaAIC = results.AIC - min(results.AIC);
 results = sortrows(results, 'AIC');
-
+% Modellvergleich als Excel-Datei speichern
+writetable(results, fullfile(outDir, ...
+    'AIC_model_comparison_point_logistic_regression.xlsx'));
 fprintf('\nAIC-MODELLVERGLEICH:\n');
 disp(results);
 %% 4b) AIC-Plot fuer alle 9 Modelle
@@ -206,7 +210,13 @@ fprintf('DeltaAIC: %.4f\n', results.DeltaAIC(1));
 %% 4c) Koeffizientenplot des besten Modells
 
 coefTable = bestModel.Coefficients;
+% Koeffiziententabelle speichern
+coefTableOut = coefTable;
+coefTableOut.Predictor = string(coefTableOut.Properties.RowNames);
+coefTableOut = movevars(coefTableOut, 'Predictor', 'Before', 1);
 
+writetable(coefTableOut, fullfile(outDir, ...
+    'coefficients_best_point_based_logistic_model.xlsx'));
 coefNames = string(coefTable.Properties.RowNames);
 coefNames(coefNames == "(Intercept)") = "Intercept";
 
@@ -275,7 +285,10 @@ ConfusionTable = array2table(confMat, ...
     'RowNames', {'True_0','True_1'});
 
 disp(ConfusionTable);
-
+% Konfusionsmatrix speichern
+writetable(ConfusionTable, fullfile(outDir, ...
+    'confusion_matrix_best_point_based_logistic_model.xlsx'), ...
+    'WriteRowNames', true);
 fprintf('Accuracy bei Schwellenwert 0.5: %.4f\n', accuracy);
 
 fig = figure('Color','w','Position',[100 100 850 650]);
@@ -445,6 +458,85 @@ P(invalid_model) = NaN;
     P(P < 0) = 0;
     P(P > 1) = 1;
 
+    P = 1 ./ (1 + exp(-eta));
+
+    invalid_model = invalid_base;
+
+    P(invalid_model) = NaN;
+    P(P < 0) = 0;
+    P(P > 1) = 1;
+
+    %% Rasterauswertung nur fuer das beste Punktmodell
+    if k == bestIdx
+
+        valid = ~isnan(P) & isfinite(P) & isfinite(eta);
+
+        P_valid = double(P(valid));
+        eta_valid = double(eta(valid));
+
+        eta_threshold_075 = log(0.75 / (1 - 0.75));
+
+        nValid = numel(P_valid);
+        nHigh075 = sum(P_valid >= 0.75);
+        shareHigh075 = 100 * mean(P_valid >= 0.75);
+
+        rasterEtaSummary = table( ...
+            nValid, ...
+            nHigh075, ...
+            shareHigh075, ...
+            eta_threshold_075, ...
+            min(eta_valid), ...
+            prctile(eta_valid, 25), ...
+            median(eta_valid), ...
+            mean(eta_valid), ...
+            prctile(eta_valid, 75), ...
+            prctile(eta_valid, 95), ...
+            max(eta_valid), ...
+            'VariableNames', { ...
+            'NValidPixels', ...
+            'N_P_GE_075', ...
+            'Share_P_GE_075_Percent', ...
+            'EtaThreshold_P075', ...
+            'EtaMinimum', ...
+            'EtaQ1', ...
+            'EtaMedian', ...
+            'EtaMean', ...
+            'EtaQ3', ...
+            'EtaP95', ...
+            'EtaMaximum'});
+
+        fprintf('\nRasterauswertung des besten Punktmodells:\n');
+        disp(rasterEtaSummary);
+
+        writetable(rasterEtaSummary, fullfile(outDir, ...
+            'raster_eta_summary_best_point_based_model.xlsx'));
+    end
+
+    fprintf('\nModel_%02d Kartenkontrolle:\n', k);
+%% GeoTIFF-Export fuer QGIS: nur Model 4 und Model 9
+% Vollstaendige Wahrscheinlichkeitskarte:
+% Wertebereich 0 bis 1; NaN bleibt ausserhalb/ungueltig.
+% EPSG:25832 passt zu deinem Ahrtal-Projekt in UTM 32N.
+
+if ismember(k, [4 9])
+
+    P_out = single(P);
+
+    geotiffwrite(fullfile(outDir, ...
+        sprintf('model_%02d_probability_full.tif', k)), ...
+        P_out, Rgeo, 'CoordRefSysCode', 25832);
+
+    % Optional zusaetzlich: nur Hochwahrscheinlichkeitsbereich 0.75 bis 1.0.
+    % Alles darunter wird NaN und kann in QGIS transparent dargestellt werden.
+
+    P_high = P_out;
+    P_high(P_high < 0.75) = NaN;
+
+    geotiffwrite(fullfile(outDir, ...
+        sprintf('model_%02d_probability_high_075_100.tif', k)), ...
+        P_high, Rgeo, 'CoordRefSysCode', 25832);
+
+end
    fprintf('\nModel_%02d Kartenkontrolle:\n', k);
 fprintf('NaN-Anteil P: %.2f %%\n', 100 * sum(isnan(P(:))) / numel(P));
 fprintf('Minimum P: %.4f\n', min(P(:), [], 'omitnan'));
