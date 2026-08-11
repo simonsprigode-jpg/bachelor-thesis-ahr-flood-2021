@@ -100,6 +100,37 @@ ca. **30 %**
 - korrekte Dateisuche und Spaltenerkennung
 - Fehlersuche und Codebereinigung
 
+  **Sinngemäß rekonstruierte wesentliche Prompts**
+
+1. „Cliff's Delta als Methodik und die beiden Gruppenvergleiche stehen fest. Wie kann ich die
+   Berechnung bei etwa 26.000 Werten effizient in MATLAB umsetzen?“
+
+   **Daraus entstandene Code-Idee:** effiziente rangbasierte Implementierung,
+   ohne sämtliche Wertepaarungen explizit zu erzeugen.
+
+   **Betroffener Codebereich:**  
+   [Funktion `cliffsDeltaFast()` – KI-unterstützte Implementierung](HIER_PERMALINK_EINFÜGEN)
+
+   2. „Kannst du mir helfen die gerichteten Cliff's-Delta-Werte für beide Referenzmethoden
+   vergleichbar darzustellen?“
+
+   **Daraus entstandene Code-Idee:** Hilfe bei Erstellung und Ausgabe
+   der beiden Effektstärkediagramme.
+
+    **Betroffener Codebereich:**  
+   [Funktion `makeDeltaBarFigure()`](HIER_PERMALINK)
+
+   3. „Aus den absoluten Delta-Werten möchte ich zusätzlich die relative
+   Trennstärke der Parameter für beide Methoden vergleichen.“
+
+   **Daraus entstandene Code-Idee:** Berechnung der relativen Anteile und
+   gemeinsame Vergleichsabbildung beider Referenzmethoden.
+
+   **Betroffene Codebereiche:**  
+   [Berechnung von `sharePoint` und `shareBuffer`](HIER_PERMALINK_1)  
+   [Funktion `makeMethodComparisonRankingFigure()`](HIER_PERMALINK_2)
+
+
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
 ca. **40 %**
 
