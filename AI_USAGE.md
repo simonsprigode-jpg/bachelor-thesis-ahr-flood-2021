@@ -426,7 +426,7 @@ ca. **50–55 %**
    Median-Kompositen zusammenfasst.
 
    **Betroffene Codebereiche:**  
-   [Funktion `maskS2SR()`](HIER_PERMALINK_1)  
+   [Funktion `maskS2SR()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/137cfa78fe6eb6fbd1dc1e5fcc6f6bd3bdd43c96/GEE/sentinel2_change_mapping.js#L1601-L1620)  
    [Funktion `composite()`](HIER_PERMALINK_2)
 
 2. „NDVI und BSI sollen für beide Zeiträume berechnet und anschließend als
