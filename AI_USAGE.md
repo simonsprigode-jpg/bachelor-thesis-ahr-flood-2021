@@ -122,7 +122,7 @@ ca. **25–30 %**
    Spearman-Berechnung erfolgt mit der MATLAB-Standardfunktion `corr`.
 
    **Betroffener Codebereich:**  
-   [Funktion `computeSpearman()`](HIER_PERMALINK_1)
+   [Funktion `computeSpearman()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/cfd31433f2203898d2492034502795c1153c8f2b/MATLAB/spearman_correlation_analysis.m#L193-L207)
 
 2. „Die drei Korrelationsmatrizen sollen zusätzlich in einer gemeinsamen
    Abbildung direkt miteinander vergleichbar dargestellt werden.“
