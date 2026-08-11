@@ -449,7 +449,7 @@ ca. **50–55 %**
    beiden Sentinel-2-Kompositen.
 
    **Betroffener Codebereich:**  
-   [Funktion `addIndices()`]()
+   [Funktion `addIndices()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/80c654abf6b4745c9aa7e83b7ef7af4e2852f8a6/GEE/sentinel2_change_mapping.js#L1636-L1654)
 
 4. „Vergleiche NDVI und BSI zwischen Vor- und Nachzeitraum als `post - pre`
    und setze meine festgelegten Schwellenwerte `dNDVI < -0.20` und
