@@ -247,6 +247,60 @@ ca. **40 %**
 - zusätzlicher GeoTIFF-Export für Bereiche mit p >= 0.75
 - technische Fehlersuche und Speicheroptimierung
 
+**Sinngemäß rekonstruierte wesentliche Prompts**
+
+1. „Meine Klassen, Prädiktorreihenfolge und neun schrittweise erweiterten
+   Logitmodelle stehen fest. Hilf mir, die Modelle in MATLAB automatisiert
+   aufzubauen, statt neun einzelne Modellblöcke zu schreiben.“
+
+   **Daraus entstandene Code-Idee:** Die jeweils benötigten Prädiktoren werden
+   aus `predictor_order` ausgewählt und die Modellformel automatisch aufgebaut.
+   Die Modelle werden anschließend mit der MATLAB-Funktion `fitglm` als
+   binomiale Modelle mit Logit-Link geschätzt.
+
+   **Betroffener Codebereich:**  
+   [Schleife zum Aufbau und Fitten der neun Modelle](HIER_PERMALINK_1)
+
+2. „Hilf mir bei dem automatisierten Modellvergleich und die Modellbewertung
+   über AIC/BIC sowie ROC/AUC und Konfusionsmatrix.“
+
+   **Daraus entstandene Code-Idee:** AIC und BIC werden für alle Modelle
+   gesammelt und vergleichbar ausgegeben. Für das ausgewählte Modell werden
+   vorhergesagte Wahrscheinlichkeiten erzeugt, aus denen ROC-Kurve, AUC und
+   die Klassifikation bei einem festen Schwellenwert berechnet werden.
+
+   **Betroffene Codebereiche:**  
+   [Modellvergleich über AIC/BIC](HIER_PERMALINK_2)  
+   [ROC/AUC mit `perfcurve()` und Konfusionsmatrix](HIER_PERMALINK_3)
+
+3. „Die Modellkoeffizienten sollen auf die vollständigen Prädiktorraster
+   übertragen werden. Verwende dafür dieselbe Standardisierung wie bei den
+   Trainingsdaten und berechne für jede Rasterzelle die Modellwahrscheinlichkeit.“
+
+   **Daraus entstandene Code-Idee:** Die Raster werden mit den gespeicherten
+   Mittelwerten und Standardabweichungen der Punktdaten standardisiert.
+   Anschließend werden für jedes Modell automatisch die passenden
+   Regressionskoeffizienten ausgewählt und zum linearen Prädiktor `eta`
+   zusammengesetzt. Daraus wird die logistische Wahrscheinlichkeit berechnet.
+
+   **Betroffene Codebereiche:**  
+   [Funktion `zscoreRaster()`](HIER_PERMALINK_4)  
+   [Rasterbasierter Aufbau von `eta` und Berechnung von `P`](HIER_PERMALINK_5) -> eta = b0 + b1*Z1 + b2*Z2 + ... entspricht dem linearen Prädiktor Xβ eines GLM.      Die anschließende Berechnung P = 1 ./ (1 + exp(-eta)) ist die standardmäßige inverse Logit-Transformation, mit der der lineare Prädiktor in eine
+   Wahrscheinlichkeit zwischen 0 und 1 überführt wird.
+
+5. „Erstelle die Rasterauswertung. Achte auf ungültige Pixel und
+   exportiere für Modell 4 und Modell 9 zusätzlich die vollständigen
+   Wahrscheinlichkeitsraster sowie Raster nur für `p >= 0.75` als GeoTIFF.“
+
+   **Daraus entstandene Code-Idee:** Gemeinsame NoData-Maske für alle
+   Prädiktorraster, Prüfung der Rastergrößen und automatisierter
+   GeoTIFF-Export der ausgewählten Modelle.
+
+   **Betroffene Codebereiche:**  
+   [Rastergrößen- und NoData-Prüfung](HIER_PERMALINK_6)  
+   [GeoTIFF-Export mit `geotiffwrite()`](HIER_PERMALINK_7)
+   
+
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
 ca. **50–55 %**
 
@@ -280,6 +334,8 @@ ca. **50–55 %**
 - Erstellung der Modellkarten 1–9
 - GeoTIFF-Export für Modell 4 und Modell 9 sowie p >= 0.75
 - Fehlersuche, Bereinigung und Verbesserung der Portabilität des Codes
+
+  
 
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
 ca. **50–55 %**
