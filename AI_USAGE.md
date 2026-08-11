@@ -374,7 +374,7 @@ ca. **50–55 %**
 
    **Betroffene Codebereiche:**  
    [Funktion `zscoreRaster()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/2ef4d4d9a8d327a3d8be27a25f0006737bf10b30/MATLAB/logistic_regression_point.m#L868-L881)  
-   [Rasterbasierter Aufbau von `eta` und Berechnung von `P`](HIER_PERMALINK_5) -> gleiches siehe Buffermethode 
+   [Rasterbasierter Aufbau von `eta` und Berechnung von `P`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/900b4df1e97ee384d21c32d21ffff15cf70c8790/MATLAB/logistic_regression_point.m#L511-L546) -> gleiches siehe Buffermethode 
    [Rasterprüfung und GeoTIFF-Export](HIER_PERMALINK_6)
 
 
