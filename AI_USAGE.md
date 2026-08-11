@@ -270,7 +270,7 @@ ca. **40 %**
 
    **Betroffene Codebereiche:**  
    [Modellvergleich über AIC/BIC](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/ac18e7976995b60f1f251a5c37b045645b897962/MATLAB/logistic_regression_buffer.m#L187-L216)  
-   [ROC/AUC mit `perfcurve()` und Konfusionsmatrix](HIER_PERMALINK_3)
+   [ROC/AUC mit `perfcurve()` und Konfusionsmatrix](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/812bf51cd11dd4f17cdde0c3b4a4dabfefeb2c97/MATLAB/logistic_regression_buffer.m#L247-L299)
 
 3. „Die Modellkoeffizienten sollen auf die vollständigen Prädiktorraster
    übertragen werden. Verwende dafür dieselbe Standardisierung wie bei den
