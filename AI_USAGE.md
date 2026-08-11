@@ -335,7 +335,49 @@ ca. **50–55 %**
 - GeoTIFF-Export für Modell 4 und Modell 9 sowie p >= 0.75
 - Fehlersuche, Bereinigung und Verbesserung der Portabilität des Codes
 
-  
+**Sinngemäß rekonstruierte wesentliche Prompts**
+
+1. „Übertrage meinen bereits festgelegten Modellaufbau der Buffermethode auf
+   KFV vs. Random-Points, ohne die Modellstruktur oder Prädiktorreihenfolge
+   zu verändern.“
+
+   **Daraus entstandene Code-Idee:** Das automatisierte Gerüst der
+   Buffermethode wird auf die Punktreferenz übertragen. Die jeweils benötigten
+   Prädiktoren werden aus `predictor_order` ausgewählt und die neun Modelle
+   automatisch mit `fitglm` berechnet.
+
+   **Betroffener Codebereich:**  
+   [Schleife zum Aufbau und Fitten der neun Punktmodelle](HIER_PERMALINK_1)
+
+2. „Übertrage auch den Modellvergleich und die Diagnostik auf die
+   Punktmethode, damit beide Referenzmethoden gleich ausgewertet werden.“
+
+   **Daraus entstandene Code-Idee:** AIC und BIC werden für die neun Modelle
+   gesammelt. Für das ausgewählte Modell werden ROC/AUC und die
+   Konfusionsmatrix nach demselben Verfahren wie bei der Buffermethode
+   berechnet.
+
+   **Betroffene Codebereiche:**  
+   [Modellvergleich über AIC/BIC](HIER_PERMALINK_2)  
+   [ROC/AUC mit `perfcurve()` und Konfusionsmatrix](HIER_PERMALINK_3)
+
+3. „Übertrage auch die Modelle der Punktmethode auf die vollständigen
+   Prädiktorraster und erzeuge dieselben Karten und GeoTIFF-Ausgaben wie
+   bei der Buffermethode.“
+
+   **Daraus entstandene Code-Idee:** Die Raster werden mit den für die
+   Punktmethode bestimmten Mittelwerten und Standardabweichungen
+   standardisiert. Anschließend werden für jedes Modell die passenden
+   Koeffizienten automatisch zum linearen Prädiktor `eta` zusammengesetzt
+   und daraus die logistische Wahrscheinlichkeit berechnet. Zusätzlich
+   werden ungültige Rasterzellen behandelt und für Modell 4 und Modell 9
+   die vollständigen sowie auf `p >= 0.75` begrenzten GeoTIFFs exportiert.
+
+   **Betroffene Codebereiche:**  
+   [Funktion `zscoreRaster()`](HIER_PERMALINK_4)  
+   [Rasterbasierter Aufbau von `eta` und Berechnung von `P`](HIER_PERMALINK_5) -> gleiches siehe Buffermethode 
+   [Rasterprüfung und GeoTIFF-Export](HIER_PERMALINK_6)
+
 
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
 ca. **50–55 %**
@@ -368,8 +410,35 @@ ca. **50–55 %**
 - Organisation und Bereinigung der Visualisierungslayer
 - Überarbeitung und Dokumentation des Codes
 
+**Sinngemäß rekonstruierte wesentliche Prompts**
+
+1. „Untersuchungsgebiet und Vor-/Nachzeiträume stehen fest. Hilf mir, die
+   Sentinel-2-Daten in Earth Engine zu filtern, Wolken und Schatten zu
+   maskieren und für beide Zeiträume Median-Komposite zu erstellen. Gib mir Codingunterstützung."
+
+   **Daraus entstandene Code-Idee:** Aufbau einer wiederverwendbaren
+   Wolken-/Schattenmaskierung auf Basis von SCL und QA60 sowie einer Funktion,
+   die Sentinel-2-Szenen räumlich und zeitlich filtert und anschließend zu
+   Median-Kompositen zusammenfasst.
+
+   **Betroffene Codebereiche:**  
+   [Funktion `maskS2SR()`](HIER_PERMALINK_1)  
+   [Funktion `composite()`](HIER_PERMALINK_2)
+
+2. „NDVI und BSI sollen für beide Zeiträume berechnet und anschließend als
+   Veränderung `post - pre` verglichen werden. Hilf mir bei der Codeerstellung, um zur
+   Kartierungsunterstützung benötigte Veränderungsmasken zu erstellen.“
+
+   **Daraus entstandene Code-Idee:** Bündelung der Indexberechnung in
+   `addIndices()`, anschließende Berechnung von `dNDVI` und `dBSI` sowie
+   Erstellung der Schwellenwertmasken für auffällige Veränderungen.
+
+   **Betroffene Codebereiche:**  
+   [Funktion `addIndices()`](HIER_PERMALINK_3)  
+   [Berechnung von `dNDVI`, `dBSI`, `vegLoss` und `newBareDebris`](HIER_PERMALINK_4)
+
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
-ca. **20–30 %**
+ca. **20 %**
 
 ---
 
