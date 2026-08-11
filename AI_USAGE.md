@@ -269,7 +269,7 @@ ca. **40 %**
    die Klassifikation bei einem festen Schwellenwert berechnet werden.
 
    **Betroffene Codebereiche:**  
-   [Modellvergleich über AIC/BIC](HIER_PERMALINK_2)  
+   [Modellvergleich über AIC/BIC](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/ac18e7976995b60f1f251a5c37b045645b897962/MATLAB/logistic_regression_buffer.m#L187-L216)  
    [ROC/AUC mit `perfcurve()` und Konfusionsmatrix](HIER_PERMALINK_3)
 
 3. „Die Modellkoeffizienten sollen auf die vollständigen Prädiktorraster
