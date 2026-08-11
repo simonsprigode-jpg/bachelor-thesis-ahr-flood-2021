@@ -47,6 +47,46 @@ Arbeit oder der fachlichen Eigenleistung dar.
 - technische Umsetzung der 2x2-Übersichtsabbildung
 - Fehlersuche und Bereinigung des Codes
 
+**Sinngemäß rekonstruierte wesentliche Prompts**
+
+1. „Die drei Datengruppen, neun Parameter und Transformationen stehen bereits
+   fest. Hilf mir, die wiederkehrende Erstellung der Boxplots in MATLAB
+   übersichtlich zu strukturieren und zu automatisieren. Ich möchte die Daten aller 3 Gruppen als vergleichende Boxplots je Parameter nebeneinander darstellen.“
+
+   **Daraus entstandene Code-Idee:** Die bereits festgelegten Gruppen und
+   Parameter werden über wiederverwendbare Plotfunktionen verarbeitet, anstatt
+   für jeden Geländeparameter einen separaten Plotblock zu schreiben.
+
+   **Betroffene Codebereiche:**  
+   [Funktion `plotThreeGroupBox()`](HIER_PERMALINK_1)  
+   [Funktion `drawThreeGroupBox()`](HIER_PERMALINK_2)
+
+2. „Für den Ergebnisteil möchte ich meine vier Hauptparameter, mit den größten Gruppenunterschieden: 
+   Slope, TWI, Mid-Slope Position und Flow Accumulation zusätzlich gemeinsam
+   als 2×2-Abbildung darstellen und die wichtigsten deskriptiven Kennwerte
+   ausgeben.“
+
+   **Daraus entstandene Code-Idee:** Ergänzung einer automatisierten
+   2×2-Übersichtsabbildung sowie einer zusammenfassenden Tabelle mit
+   Stichprobengröße, Mittelwert, Median, Quartilen und IQR (summary_4_wichtigste_parameter)
+
+   **Betroffene Codebereiche:**  
+   [Funktion `plotFourPanelBoxplots()`](HIER_PERMALINK_3)  
+   [Funktion `makeSummaryTable()`](HIER_PERMALINK_4)
+
+3. „Erstelle die Spaltenerkennung beim Einlesen der Dateien robust gegenüber Sonderzeichen bzw. Zeilenumbrüchen in
+   den Excel-Spaltennamen, ohne die Analyse selbst zu verändern.“
+
+   **Daraus entstandene Code-Idee:** Die Excel-Spaltennamen werden für die
+   Suche vereinheitlicht, sodass beispielsweise Zeilenumbrüche oder
+   Unterstriche die Zuordnung beim Einlesen der Geländeparameter nicht verhindern.
+
+   **Betroffene Codebereiche:**  
+   [Funktion `getNumericColExact()`](HIER_PERMALINK_5)  
+   [Funktion `findExactVar()`](HIER_PERMALINK_6)  
+   [Funktion `normalizeVarNames()`](HIER_PERMALINK_7)
+
+
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
 ca. **25–30 %**
 
@@ -71,6 +111,44 @@ ca. **25–30 %**
 - automatisierte Erstellung der kombinierten Vergleichsabbildung
 - Export der Korrelationswerte und Abbildungen
 - Fehlersuche bei Excel-Spaltennamen und Zeilenumbrüchen
+
+**Sinngemäß rekonstruierte wesentliche Prompts**
+
+1. „Die Verwendung der Spearman-Korrelation, die drei Datensätze und die neun
+   Parameter stehen fest. Kannst du mir helfen die Berechnung für alle drei Datensätze
+   einheitlich in MATLAB umzusetzen?“
+
+   **Daraus entstandene Code-Idee:** Die Spearman-Korrelationsmatrix wird über
+   eine gemeinsame Funktion für jeden Datensatz berechnet, anstatt die
+   Berechnung dreimal separat zu programmieren. Die eigentliche
+   Spearman-Berechnung erfolgt mit der MATLAB-Standardfunktion `corr`.
+
+   **Betroffener Codebereich:**  
+   [Funktion `computeSpearman()`](HIER_PERMALINK_1)
+
+2. „Die drei Korrelationsmatrizen sollen zusätzlich in einer gemeinsamen
+   Abbildung direkt miteinander vergleichbar dargestellt werden.“
+
+   **Daraus entstandene Code-Idee:** Automatisierte Darstellung der drei
+   Korrelationsmatrizen mit einheitlicher Farbskala, eingetragenen
+   Korrelationskoeffizienten und gemeinsamer Vergleichsabbildung.
+
+   **Betroffene Codebereiche:**  
+   [Funktion `makeCombinedCorrFigure()`](HIER_PERMALINK_2)  
+   [Funktion `plotCorrOnAxes()`](HIER_PERMALINK_3)
+
+3. „Einige Excel-Spalten werden wegen Sonderzeichen bzw. Zeilenumbrüchen in
+   den Spaltennamen nicht erkannt. Mach die Zuordnung robust gegenüber Sonderzeichen etc., ohne die
+   Datenwerte selbst zu verändern.“
+
+   **Daraus entstandene Code-Idee:** Die Spaltennamen werden nur für die Suche
+   vereinheitlicht, indem Sonderzeichen, Unterstriche und Zeilenumbrüche
+   ignoriert werden. Anschließend wird weiterhin die tatsächliche
+   Originalspalte aus der Tabelle verwendet.
+
+   **Betroffener Codebereich:**  
+   [Funktion `buildParameterTable()` und Spaltennormalisierung](HIER_PERMALINK_4)
+
 
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
 ca. **30 %**
