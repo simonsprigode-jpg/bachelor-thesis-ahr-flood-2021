@@ -72,7 +72,7 @@ Arbeit oder der fachlichen Eigenleistung dar.
 
    **Betroffene Codebereiche:**  
    [Funktion `plotFourPanelBoxplots()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/27353977cc9af75245d2b2f391d3fcd04e9595a6/MATLAB/boxplots_terrain_parameters.m#L247-L261)  
-   [Funktion `makeSummaryTable()`](HIER_PERMALINK_4)
+   [Funktion `makeSummaryTable()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/681922f4e88e0a33497a40eb5422d5b52a0fdf43/MATLAB/boxplots_terrain_parameters.m#L116-L160)
 
 3. „Erstelle die Spaltenerkennung beim Einlesen der Dateien robust gegenüber Sonderzeichen bzw. Zeilenumbrüchen in
    den Excel-Spaltennamen, ohne die Analyse selbst zu verändern.“
