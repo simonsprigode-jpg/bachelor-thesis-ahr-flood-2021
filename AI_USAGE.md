@@ -133,7 +133,7 @@ ca. **25–30 %**
 
    **Betroffene Codebereiche:**  
    [Funktion `makeCombinedCorrFigure()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/352e98426319d61a9be1755286abafaf1a1d9956/MATLAB/spearman_correlation_analysis.m#L208-L272)  
-   [Funktion `plotCorrOnAxes()`](HIER_PERMALINK_3)
+   [Funktion `plotCorrOnAxes()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/ecd4a60967a08aa3a1d97ed62bb75bfd3b386569/MATLAB/spearman_correlation_analysis.m#L274-L317)
 
 3. „Einige Excel-Spalten werden wegen Sonderzeichen bzw. Zeilenumbrüchen in
    den Spaltennamen nicht erkannt. Mach die Zuordnung robust gegenüber Sonderzeichen etc., ohne die
