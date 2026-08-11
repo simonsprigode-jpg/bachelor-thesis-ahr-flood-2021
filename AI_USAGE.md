@@ -416,9 +416,10 @@ ca. **50–55 %**
 
 **Sinngemäß rekonstruierte wesentliche Prompts**
 
-1. „Untersuchungsgebiet und Vor-/Nachzeiträume stehen fest. Hilf mir, die
-   Sentinel-2-Daten in Earth Engine zu filtern, Wolken und Schatten zu
-   maskieren und für beide Zeiträume Median-Komposite zu erstellen. Gib mir Codingunterstützung."
+1. „Untersuchungsgebiet und Vor-/Nachzeiträume stehen fest. Hilf mir bei der
+   technischen Umsetzung, die Sentinel-2-Daten in Earth Engine zu filtern,
+   Wolken und Schatten zu maskieren und für beide Zeiträume Median-Komposite
+   zu erstellen.“
 
    **Daraus entstandene Code-Idee:** Aufbau einer wiederverwendbaren
    Wolken-/Schattenmaskierung auf Basis von SCL und QA60 sowie einer Funktion,
@@ -429,20 +430,10 @@ ca. **50–55 %**
    [Funktion `maskS2SR()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/137cfa78fe6eb6fbd1dc1e5fcc6f6bd3bdd43c96/GEE/sentinel2_change_mapping.js#L1601-L1620)  
    [Funktion `composite()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/0852ed831d137d022d0e5baa20fe41d007a57eed/GEE/sentinel2_change_mapping.js#L1622-L1632)
 
-2. „NDVI und BSI sollen für beide Zeiträume berechnet und anschließend als
-   Veränderung `post - pre` verglichen werden. Hilf mir bei der Codeerstellung, um zur
-   Kartierungsunterstützung benötigte Veränderungsmasken zu erstellen.“
 
-   **Daraus entstandene Code-Idee:** Bündelung der Indexberechnung in
-   `addIndices()`, anschließende Berechnung von `dNDVI` und `dBSI` sowie
-   Erstellung der Schwellenwertmasken für auffällige Veränderungen.
-
-   **Betroffene Codebereiche:**  
-   [Funktion `addIndices()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/747b42df91f5a367aead8c424d78e8504724af0d/GEE/sentinel2_change_mapping.js#L1636-L1654)  
-   [Berechnung von `dNDVI`, `dBSI`, `vegLoss` und `newBareDebris`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/13c284d346e754e7bbb0a2a89ed19da32bc69333/GEE/sentinel2_change_mapping.js#L1659-L1675)
-
-3. „Hilf mir bei der Berechnung für die Vor- und Nach-Komposite NDVI und BSI. Wie füge ich beide
-   Indizes als zusätzliche Bänder hinzu?“
+2. „Hilf mir bei der technischen Umsetzung der Berechnung von NDVI und BSI
+   für die Vor- und Nach-Komposite. Wie können beide Indizes als zusätzliche
+   Bänder hinzugefügt werden?“
 
    **Daraus entstandene Code-Idee:** Bündelung der Berechnung von NDVI und BSI
    in der Funktion `addIndices()` und Hinzufügen der berechneten Indizes zu
@@ -451,20 +442,21 @@ ca. **50–55 %**
    **Betroffener Codebereich:**  
    [Funktion `addIndices()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/80c654abf6b4745c9aa7e83b7ef7af4e2852f8a6/GEE/sentinel2_change_mapping.js#L1636-L1654)
 
-4. „Vergleiche NDVI und BSI zwischen Vor- und Nachzeitraum als `post - pre`
-   und setze meine festgelegten Schwellenwerte `dNDVI < -0.20` und
-   `dBSI > 0.15` als Veränderungsmasken um.“
+
+3. „Vergleiche NDVI und BSI zwischen Vor- und Nachzeitraum als `post - pre`
+   und hilf mir bei der technischen Umsetzung meiner festgelegten Schwellenwerte
+   `dNDVI < -0.20` und `dBSI > 0.15` als Veränderungsmasken.“
 
    **Daraus entstandene Code-Idee:** Pixelweise Berechnung von `dNDVI` und
    `dBSI` sowie technische Umsetzung der Schwellenwertmasken `vegLoss` und
    `newBareDebris`.
 
    **Betroffener Codebereich:**  
-   [Berechnung von `dNDVI`, `dBSI` und den Veränderungsmasken](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/8083ba9f24c5a2c6a7e145d10a70299c7e50c711/GEE/sentinel2_change_mapping.js#L1659-L1675)
+   [Berechnung von `dNDVI`, `dBSI`, `vegLoss` und `newBareDebris`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/8083ba9f24c5a2c6a7e145d10a70299c7e50c711/GEE/sentinel2_change_mapping.js#L1659-L1675)
+
 
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
 ca. **20 %**
-
 ---
 
 ## Gesamtbewertung der Coding-Unterstützung
