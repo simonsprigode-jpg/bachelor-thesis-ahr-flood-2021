@@ -427,7 +427,7 @@ ca. **50–55 %**
 
    **Betroffene Codebereiche:**  
    [Funktion `maskS2SR()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/137cfa78fe6eb6fbd1dc1e5fcc6f6bd3bdd43c96/GEE/sentinel2_change_mapping.js#L1601-L1620)  
-   [Funktion `composite()`](HIER_PERMALINK_2)
+   [Funktion `composite()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/0852ed831d137d022d0e5baa20fe41d007a57eed/GEE/sentinel2_change_mapping.js#L1622-L1632)
 
 2. „NDVI und BSI sollen für beide Zeiträume berechnet und anschließend als
    Veränderung `post - pre` verglichen werden. Hilf mir bei der Codeerstellung, um zur
