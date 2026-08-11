@@ -58,8 +58,8 @@ Arbeit oder der fachlichen Eigenleistung dar.
    für jeden Geländeparameter einen separaten Plotblock zu schreiben.
 
    **Betroffene Codebereiche:**  
-   [Funktion `plotThreeGroupBox()`](.../MATLAB/boxplots_terrain_parameters.m#L225-L245)  
-   [Funktion `drawThreeGroupBox()`](.../MATLAB/boxplots_terrain_parameters.m#L225-L245)
+   [Funktion `plotThreeGroupBox()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/851f119018f040cbde1aa996eddb3cd39a565feb/MATLAB/boxplots_terrain_parameters.m#L225-L246)  
+   [Funktion `drawThreeGroupBox()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/851f119018f040cbde1aa996eddb3cd39a565feb/MATLAB/boxplots_terrain_parameters.m#L225-L246)
 
 2. „Für den Ergebnisteil möchte ich meine vier Hauptparameter, mit den größten Gruppenunterschieden: 
    Slope, TWI, Mid-Slope Position und Flow Accumulation zusätzlich gemeinsam
