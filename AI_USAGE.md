@@ -81,10 +81,8 @@ Arbeit oder der fachlichen Eigenleistung dar.
    Suche vereinheitlicht, sodass beispielsweise Zeilenumbrüche oder
    Unterstriche die Zuordnung beim Einlesen der Geländeparameter nicht verhindern.
 
-   **Betroffene Codebereiche:**  
-   [Funktion `getNumericColExact()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/259cce5f5effc06f224e4e1b8216caab93b8acf3/MATLAB/boxplots_terrain_parameters.m#L182-L219)  
-   [Funktion `findExactVar()`](HIER_PERMALINK_6)  
-   [Funktion `normalizeVarNames()`](HIER_PERMALINK_7)
+   **Betroffener Codebereich:**  
+[Robuste Spaltenerkennung mit `getNumericColExact()`, `findExactVar()` und `normalizeVarNames()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/259cce5f5effc06f224e4e1b8216caab93b8acf3/MATLAB/boxplots_terrain_parameters.m#L182-L219)
 
 
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
