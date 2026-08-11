@@ -438,7 +438,7 @@ ca. **50–55 %**
    Erstellung der Schwellenwertmasken für auffällige Veränderungen.
 
    **Betroffene Codebereiche:**  
-   [Funktion `addIndices()`](HIER_PERMALINK_3)  
+   [Funktion `addIndices()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/747b42df91f5a367aead8c424d78e8504724af0d/GEE/sentinel2_change_mapping.js#L1636-L1654)  
    [Berechnung von `dNDVI`, `dBSI`, `vegLoss` und `newBareDebris`](HIER_PERMALINK_4)
 
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
