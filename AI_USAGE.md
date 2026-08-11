@@ -258,7 +258,7 @@ ca. **40 %**
    binomiale Modelle mit Logit-Link geschätzt.
 
    **Betroffener Codebereich:**  
-   [Schleife zum Aufbau und Fitten der neun Modelle](HIER_PERMALINK_1)
+   [Schleife zum Aufbau und Fitten der neun Modelle](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/36b4fdb6734b99f3c32ec27fa3716c2a1d9fc5f5/MATLAB/logistic_regression_buffer.m#L151-L184)
 
 2. „Hilf mir bei dem automatisierten Modellvergleich und die Modellbewertung
    über AIC/BIC sowie ROC/AUC und Konfusionsmatrix.“
