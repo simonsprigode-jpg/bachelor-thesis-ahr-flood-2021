@@ -186,7 +186,7 @@ ca. **30 %**
    ohne sämtliche Wertepaarungen explizit zu erzeugen.
 
    **Betroffener Codebereich:**  
-   [Funktion `cliffsDeltaFast()` – KI-unterstützte Implementierung](HIER_PERMALINK_EINFÜGEN)
+   [Funktion `cliffsDeltaFast()` – KI-unterstützte Implementierung](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/298a01e563b316e08e98678100f90aa4d6d03ea8/MATLAB/cliffs_delta_analysis.m#L271-L283)
 
    2. „Kannst du mir helfen die gerichteten Cliff's-Delta-Werte für beide Referenzmethoden
    vergleichbar darzustellen?“
