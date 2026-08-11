@@ -284,7 +284,7 @@ ca. **40 %**
 
    **Betroffene Codebereiche:**  
    [Funktion `zscoreRaster()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/269fbcdf3d955f24d4b4a849b42efd5b0042c499/MATLAB/logistic_regression_buffer.m#L870-L883)  
-   [Rasterbasierter Aufbau von `eta` und Berechnung von `P`](HIER_PERMALINK_5) -> eta = b0 + b1*Z1 + b2*Z2 + ... entspricht dem linearen Prädiktor Xβ eines GLM.      Die anschließende Berechnung P = 1 ./ (1 + exp(-eta)) ist die standardmäßige inverse Logit-Transformation, mit der der lineare Prädiktor in eine
+   [Rasterbasierter Aufbau von `eta` und Berechnung von `P`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/38088c9f447334b5882523c4337c1012e27eab03/MATLAB/logistic_regression_buffer.m#L511-L546) -> eta = b0 + b1*Z1 + b2*Z2 + ... entspricht dem linearen Prädiktor Xβ eines GLM.      Die anschließende Berechnung P = 1 ./ (1 + exp(-eta)) ist die standardmäßige inverse Logit-Transformation, mit der der lineare Prädiktor in eine
    Wahrscheinlichkeit zwischen 0 und 1 überführt wird.
 
 5. „Erstelle die Rasterauswertung. Achte auf ungültige Pixel und
