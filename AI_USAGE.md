@@ -205,7 +205,7 @@ ca. **30 %**
 
    **Betroffene Codebereiche:**  
    [Berechnung von `sharePoint` und `shareBuffer`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/28e09477babdc56d48130bc564cacfad536fff40/MATLAB/cliffs_delta_analysis.m#L106-L118)  
-   [Funktion `makeMethodComparisonRankingFigure()`](HIER_PERMALINK_2)
+   [Funktion `makeMethodComparisonRankingFigure()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/cc52a24a9be9aa14214133603dc9965509a10368/MATLAB/cliffs_delta_analysis.m#L375-L445)
 
 
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
