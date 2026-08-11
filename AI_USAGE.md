@@ -204,7 +204,7 @@ ca. **30 %**
    gemeinsame Vergleichsabbildung beider Referenzmethoden.
 
    **Betroffene Codebereiche:**  
-   [Berechnung von `sharePoint` und `shareBuffer`](HIER_PERMALINK_1)  
+   [Berechnung von `sharePoint` und `shareBuffer`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/28e09477babdc56d48130bc564cacfad536fff40/MATLAB/cliffs_delta_analysis.m#L106-L118)  
    [Funktion `makeMethodComparisonRankingFigure()`](HIER_PERMALINK_2)
 
 
