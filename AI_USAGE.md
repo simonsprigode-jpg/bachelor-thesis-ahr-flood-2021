@@ -283,7 +283,7 @@ ca. **40 %**
    zusammengesetzt. Daraus wird die logistische Wahrscheinlichkeit berechnet.
 
    **Betroffene Codebereiche:**  
-   [Funktion `zscoreRaster()`](HIER_PERMALINK_4)  
+   [Funktion `zscoreRaster()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/269fbcdf3d955f24d4b4a849b42efd5b0042c499/MATLAB/logistic_regression_buffer.m#L870-L883)  
    [Rasterbasierter Aufbau von `eta` und Berechnung von `P`](HIER_PERMALINK_5) -> eta = b0 + b1*Z1 + b2*Z2 + ... entspricht dem linearen Prädiktor Xβ eines GLM.      Die anschließende Berechnung P = 1 ./ (1 + exp(-eta)) ist die standardmäßige inverse Logit-Transformation, mit der der lineare Prädiktor in eine
    Wahrscheinlichkeit zwischen 0 und 1 überführt wird.
 
