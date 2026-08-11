@@ -297,7 +297,7 @@ ca. **40 %**
 
    **Betroffene Codebereiche:**  
    [Rastergrößen- und NoData-Prüfung](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/8eda4cccc173da9fde77eb87c8bc37923ecb89cd/MATLAB/logistic_regression_buffer.m#L380-L424)  
-   [GeoTIFF-Export mit `geotiffwrite()`](HIER_PERMALINK_7)
+   [GeoTIFF-Export mit `geotiffwrite()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/072b51f775b6ba622938656c42f141903191f68d/MATLAB/logistic_regression_buffer.m#L612-L640)
    
 
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
