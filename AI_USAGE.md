@@ -71,7 +71,7 @@ Arbeit oder der fachlichen Eigenleistung dar.
    Stichprobengröße, Mittelwert, Median, Quartilen und IQR (summary_4_wichtigste_parameter)
 
    **Betroffene Codebereiche:**  
-   [Funktion `plotFourPanelBoxplots()`](HIER_PERMALINK_3)  
+   [Funktion `plotFourPanelBoxplots()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/27353977cc9af75245d2b2f391d3fcd04e9595a6/MATLAB/boxplots_terrain_parameters.m#L247-L261)  
    [Funktion `makeSummaryTable()`](HIER_PERMALINK_4)
 
 3. „Erstelle die Spaltenerkennung beim Einlesen der Dateien robust gegenüber Sonderzeichen bzw. Zeilenumbrüchen in
