@@ -132,7 +132,7 @@ ca. **25–30 %**
    Korrelationskoeffizienten und gemeinsamer Vergleichsabbildung.
 
    **Betroffene Codebereiche:**  
-   [Funktion `makeCombinedCorrFigure()`](HIER_PERMALINK_2)  
+   [Funktion `makeCombinedCorrFigure()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/352e98426319d61a9be1755286abafaf1a1d9956/MATLAB/spearman_correlation_analysis.m#L208-L272)  
    [Funktion `plotCorrOnAxes()`](HIER_PERMALINK_3)
 
 3. „Einige Excel-Spalten werden wegen Sonderzeichen bzw. Zeilenumbrüchen in
