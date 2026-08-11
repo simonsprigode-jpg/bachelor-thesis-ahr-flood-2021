@@ -145,7 +145,8 @@ ca. **25–30 %**
    Originalspalte aus der Tabelle verwendet.
 
    **Betroffener Codebereich:**  
-   [Funktion `buildParameterTable()` und Spaltennormalisierung](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/afc1588499bb1e7600a8c9cd25cd7c2ed8bf0dab/MATLAB/spearman_correlation_analysis.m#L142https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/b7613c09ba8e63d25e9a3fe9681fe98a01a3ad9e/MATLAB/spearman_correlation_analysis.m#L153-L156)
+   [Funktion `buildParameterTable()` und Spaltennormalisierung](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/afc1588499bb1e7600a8c9cd25cd7c2ed8bf0dab/MATLAB/spearman_correlation_analysis.m#L142)
+   [Normalisierung der Excel-Spaltennamen mit `normalizeText()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/b7613c09ba8e63d25e9a3fe9681fe98a01a3ad9e/MATLAB/spearman_correlation_analysis.m#L153-L156)
 
 
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
