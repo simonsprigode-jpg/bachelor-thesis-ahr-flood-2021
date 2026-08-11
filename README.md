@@ -6,31 +6,25 @@ Der Workflow kombiniert eine Sentinel-2-basierte Veränderungsanalyse in Google 
 
 ## Repository-Struktur
 
+```text
 bachelor-thesis-ahr-flood-2021/
-│
 ├── README.md
 ├── AI_USAGE.md
-│
 ├── MATLAB/
 │   ├── 01_boxplots_terrain_parameters.m
 │   ├── 02_spearman_correlation_analysis.m
 │   ├── 03_cliffs_delta_analysis.m
 │   ├── 04_logistic_regression_buffer.m
 │   └── 05_logistic_regression_point.m
-│
 ├── GEE/
 │   └── sentinel2_change_mapping.js
-│
-└── data/
-    ├── samples_25k/
-    │   ├── Klassenstatistik KFV Pixelwerte SAGA 25 K.xlsx
-    │   ├── Klassenstatistik Random Buffer Pixelwerte SAGA 25 K.xlsx
-    │   └── Klassenstatistik Random Points Pixelwerte SAGA 25 K.xlsx
-    │
-    └── samples_1k/
-        ├── KFV 1000 Klassenstatistik.xlsx
-        ├── Random Buffer 1000 Klassenstatistik.xlsx
-        └── Random Points 1000 Klassenstatistik.xlsx
+├── Klassenstatistik KFV Pixelwerte SAGA 25 K.xlsx
+├── Klassenstatistik Random Buffer Pixelwerte SAGA 25 K.xlsx
+├── Klassenstatistik Random Points Pixelwerte SAGA 25 K.xlsx
+├── KFV 1000 Klassenstatistik.xlsx
+├── Random Buffer 1000 Klassenstatistik.xlsx
+└── Random Points 1000 Klassenstatistik.xlsx
+```
 
 ## Analytischer Workflow
 
