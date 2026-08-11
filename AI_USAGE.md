@@ -460,7 +460,7 @@ ca. **50–55 %**
    `newBareDebris`.
 
    **Betroffener Codebereich:**  
-   [Berechnung von `dNDVI`, `dBSI` und den Veränderungsmasken](PERMALINK_4)
+   [Berechnung von `dNDVI`, `dBSI` und den Veränderungsmasken](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/8083ba9f24c5a2c6a7e145d10a70299c7e50c711/GEE/sentinel2_change_mapping.js#L1659-L1675)
 
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
 ca. **20 %**
