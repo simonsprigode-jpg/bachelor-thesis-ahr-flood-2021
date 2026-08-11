@@ -287,19 +287,6 @@ Mehrere Skripte enthalten zusätzlich lokale Hilfsfunktionen, beispielsweise `cl
 
 Die arithmetischen Bildoperationen `add()`, `subtract()` und `divide()` sowie logische Vergleiche wie `lt()`, `gt()`, `neq()` und `eq()` werden ebenfalls im Earth-Engine-Skript verwendet. Sie sind grundlegende Bestandteile der Index- und Maskenberechnung und werden hier nicht einzeln aufgeführt.
 
-## Eingangsdaten
-
-Die MATLAB-Skripte verwenden Tabellen mit den aus den neun Geländeparameter-Rastern abgegriffenen Werten für:
-
-```text
-KFV
-Random-Buffer
-Random-Points
-```
-
-Die beiden Regressionsskripte benötigen zusätzlich die vollständigen GeoTIFF-Raster der neun Geländeparameter.
-
-Die Berechnung der Geländeparameter und die Erstellung der Stichproben erfolgen im vorgelagerten GIS-Workflow und sind nicht Bestandteil der MATLAB-Skripte.
 
 ## Ausführung
 
