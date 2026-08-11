@@ -358,7 +358,7 @@ ca. **50–55 %**
 
    **Betroffene Codebereiche:**  
    [Modellvergleich über AIC/BIC](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/f1be4118f5be59675f125ea2cf926047b49f6510/MATLAB/logistic_regression_point.m#L187-L216)  
-   [ROC/AUC mit `perfcurve()` und Konfusionsmatrix](HIER_PERMALINK_3)
+   [ROC/AUC mit `perfcurve()` und Konfusionsmatrix](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/3322404300f5be7d8ed5add5e836b9f7358997d1/MATLAB/logistic_regression_point.m#L247-L299)
 
 3. „Übertrage auch die Modelle der Punktmethode auf die vollständigen
    Prädiktorraster und erzeuge dieselben Karten und GeoTIFF-Ausgaben wie
