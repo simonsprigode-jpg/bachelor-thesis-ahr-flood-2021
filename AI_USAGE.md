@@ -346,7 +346,7 @@ ca. **50–55 %**
    automatisch mit `fitglm` berechnet.
 
    **Betroffener Codebereich:**  
-   [Schleife zum Aufbau und Fitten der neun Punktmodelle](HIER_PERMALINK_1)
+   [Schleife zum Aufbau und Fitten der neun Punktmodelle](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/710b44532d62e296bacdae554fa59a33f6da1a2d/MATLAB/logistic_regression_point.m#L151-L183)
 
 2. „Übertrage auch den Modellvergleich und die Diagnostik auf die
    Punktmethode, damit beide Referenzmethoden gleich ausgewertet werden.“
