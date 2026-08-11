@@ -194,7 +194,7 @@ ca. **30 %**
    der beiden Effektstärkediagramme.
 
     **Betroffener Codebereich:**  
-   [Funktion `makeDeltaBarFigure()`](HIER_PERMALINK)
+   [Funktion `makeDeltaBarFigure()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/afc1588499bb1e7600a8c9cd25cd7c2ed8bf0dab/MATLAB/spearman_correlation_analysis.m#L142)
 
    3. „Aus den absoluten Delta-Werten möchte ich zusätzlich die relative
    Trennstärke der Parameter für beide Methoden vergleichen.“
