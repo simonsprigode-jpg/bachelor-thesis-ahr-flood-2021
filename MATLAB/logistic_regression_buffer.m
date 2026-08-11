@@ -253,6 +253,35 @@ p_hat = predict(bestModel, D_best);
 
 fprintf('\nAUC des besten Modells: %.4f\n', AUC);
 
+% ROC-Kurve als Abbildung
+fig = figure( ...
+    'Color', 'w', ...
+    'Position', [100 100 850 650]);
+
+plot(Xroc, Yroc, 'LineWidth', 1.8);
+hold on;
+
+plot([0 1], [0 1], '--', 'LineWidth', 1);
+
+xlabel('False positive rate');
+ylabel('True positive rate');
+
+title( ...
+    sprintf( ...
+        'ROC curve - best buffer-based logistic model (AUC = %.4f)', ...
+        AUC), ...
+    'Interpreter', 'none');
+
+grid on;
+axis square;
+
+exportgraphics( ...
+    fig, ...
+    fullfile(outDir, ...
+    'ROC_best_buffer_based_model_AUC.png'), ...
+    'Resolution', 300);
+
+close(fig);
 
 % Klassifikation bei p = 0.5
 Y_true = double(D_best.Y);
