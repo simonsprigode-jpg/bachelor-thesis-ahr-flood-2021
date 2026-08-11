@@ -357,7 +357,7 @@ ca. **50–55 %**
    berechnet.
 
    **Betroffene Codebereiche:**  
-   [Modellvergleich über AIC/BIC](HIER_PERMALINK_2)  
+   [Modellvergleich über AIC/BIC](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/f1be4118f5be59675f125ea2cf926047b49f6510/MATLAB/logistic_regression_point.m#L187-L216)  
    [ROC/AUC mit `perfcurve()` und Konfusionsmatrix](HIER_PERMALINK_3)
 
 3. „Übertrage auch die Modelle der Punktmethode auf die vollständigen
