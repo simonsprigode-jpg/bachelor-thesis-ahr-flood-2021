@@ -61,19 +61,19 @@ ist in der Bachelorarbeit beschrieben.
 
 ### 25-K-Stichproben
 
-Die folgenden Datensätze enthalten die aus den Geländeparameter-Rastern
-abgegriffenen Werte für KFV und die beiden Referenzmethoden:
-
 | Datensatz | Datei | Verwendung |
 |---|---|---|
-| KFV | [Klassenstatistik KFV Pixelwerte SAGA 25 K.xlsx](data/samples_25k/Klassenstatistik%20KFV%20Pixelwerte%20SAGA%2025%20K.xlsx) | Boxplots, Spearman-Korrelationen, Cliff's Delta |
-| Random-Buffer | [Klassenstatistik Random Buffer Pixelwerte SAGA 25 K.xlsx](data/samples_25k/Klassenstatistik%20Random%20Buffer%20Pixelwerte%20SAGA%2025%20K.xlsx) | Boxplots, Spearman-Korrelationen, Cliff's Delta |
-| Random-Points | [Klassenstatistik Random Points Pixelwerte SAGA 25 K.xlsx](data/samples_25k/Klassenstatistik%20Random%20Points%20Pixelwerte%20SAGA%2025%20K.xlsx) | Boxplots, Spearman-Korrelationen, Cliff's Delta |
+| KFV | [Klassenstatistik KFV Pixelwerte SAGA 25 K.xlsx](./Klassenstatistik%20KFV%20Pixelwerte%20SAGA%2025%20K.xlsx) | Boxplots, Spearman-Korrelationen, Cliff's Delta |
+| Random-Buffer | [Klassenstatistik Random Buffer Pixelwerte SAGA 25 K.xlsx](./Klassenstatistik%20Random%20Buffer%20Pixelwerte%20SAGA%2025%20K.xlsx) | Boxplots, Spearman-Korrelationen, Cliff's Delta |
+| Random-Points | [Klassenstatistik Random Points Pixelwerte SAGA 25 K.xlsx](./Klassenstatistik%20Random%20Points%20Pixelwerte%20SAGA%2025%20K.xlsx) | Boxplots, Spearman-Korrelationen, Cliff's Delta |
 
 ### 1-K-Stichproben
 
-Für die logistischen Regressionsmodelle werden die folgenden
-Stichprobentabellen verwendet:
+| Datensatz | Datei | Verwendung |
+|---|---|---|
+| KFV | [KFV 1000 Klassenstatistik.xlsx](./KFV%201000%20Klassenstatistik.xlsx) | Buffer- und Punktmodell |
+| Random-Buffer | [Random Buffer 1000 Klassenstatistik.xlsx](./Random%20Buffer%201000%20Klassenstatistik.xlsx) | Buffermodell |
+| Random-Points | [Random Points 1000 Klassenstatistik.xlsx](./Random%20Points%201000%20Klassenstatistik.xlsx) | Punktmodell |
 
 | Datensatz | Datei | Verwendung |
 |---|---|---|
