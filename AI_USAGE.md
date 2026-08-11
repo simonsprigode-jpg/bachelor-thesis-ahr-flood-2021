@@ -145,7 +145,7 @@ ca. **25–30 %**
    Originalspalte aus der Tabelle verwendet.
 
    **Betroffener Codebereich:**  
-   [Funktion `buildParameterTable()` und Spaltennormalisierung](HIER_PERMALINK_4)
+   [Funktion `buildParameterTable()` und Spaltennormalisierung](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/afc1588499bb1e7600a8c9cd25cd7c2ed8bf0dab/MATLAB/spearman_correlation_analysis.m#L142)
 
 
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
@@ -194,7 +194,7 @@ ca. **30 %**
    der beiden Effektstärkediagramme.
 
     **Betroffener Codebereich:**  
-   [Funktion `makeDeltaBarFigure()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/afc1588499bb1e7600a8c9cd25cd7c2ed8bf0dab/MATLAB/spearman_correlation_analysis.m#L142)
+   [Funktion `makeDeltaBarFigure()`]()
 
    3. „Aus den absoluten Delta-Werten möchte ich zusätzlich die relative
    Trennstärke der Parameter für beide Methoden vergleichen.“
