@@ -296,7 +296,7 @@ ca. **40 %**
    GeoTIFF-Export der ausgewählten Modelle.
 
    **Betroffene Codebereiche:**  
-   [Rastergrößen- und NoData-Prüfung](HIER_PERMALINK_6)  
+   [Rastergrößen- und NoData-Prüfung](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/8eda4cccc173da9fde77eb87c8bc37923ecb89cd/MATLAB/logistic_regression_buffer.m#L380-L424)  
    [GeoTIFF-Export mit `geotiffwrite()`](HIER_PERMALINK_7)
    
 
