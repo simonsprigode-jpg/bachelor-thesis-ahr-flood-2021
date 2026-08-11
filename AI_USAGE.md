@@ -195,7 +195,7 @@ ca. **30 %**
    der beiden Effektstärkediagramme.
 
     **Betroffener Codebereich:**  
-   [Funktion `makeDeltaBarFigure()](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/dd19667251a992c509266069824d3c0d7655bb1f/MATLAB/cliffs_delta_analysis.m#L319-L355)
+   [Funktion `makeDeltaBarFigure()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/dd19667251a992c509266069824d3c0d7655bb1f/MATLAB/cliffs_delta_analysis.m#L319-L355)
 
    3. „Aus den absoluten Delta-Werten möchte ich zusätzlich die relative
    Trennstärke der Parameter für beide Methoden vergleichen.“
