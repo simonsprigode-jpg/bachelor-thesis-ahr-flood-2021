@@ -372,20 +372,17 @@ ca. **50–55 %**
    werden ungültige Rasterzellen behandelt und für Modell 4 und Modell 9
    die vollständigen sowie auf `p >= 0.75` begrenzten GeoTIFFs exportiert.
 
-   **Betroffene Codebereiche:**  
-   [Funktion `zscoreRaster()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/2ef4d4d9a8d327a3d8be27a25f0006737bf10b30/MATLAB/logistic_regression_point.m#L868-L881)  
-   [Rasterbasierter Aufbau von `eta` und Berechnung von `P`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/900b4df1e97ee384d21c32d21ffff15cf70c8790/MATLAB/logistic_regression_point.m#L511-L546) -> gleiches siehe Buffermethode 
-   [Rasterprüfung und GeoTIFF-Export](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/12672834bd6cf2af05091865e9da74b69f4227b3/MATLAB/logistic_regression_point.m#L403-L424)
-
 **Betroffene Codebereiche:**
 
-[Funktion `zscoreRaster()`](PERMALINK_4)
+[Funktion `zscoreRaster()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/2ef4d4d9a8d327a3d8be27a25f0006737bf10b30/MATLAB/logistic_regression_point.m#L868-L881)
 
-[Rasterbasierter Aufbau von `eta` und Berechnung von `P`](PERMALINK_5)
+[Rasterbasierter Aufbau von `eta` und Berechnung von `P`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/900b4df1e97ee384d21c32d21ffff15cf70c8790/MATLAB/logistic_regression_point.m#L511-L546)
 
-[Prüfung der Rastergrößen und Aufbau der NoData-Maske](PERMALINK_6)
+[Prüfung der Rastergrößen und Aufbau der NoData-Maske](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/12672834bd6cf2af05091865e9da74b69f4227b3/MATLAB/logistic_regression_point.m#L403-L424)
 
-[GeoTIFF-Export für Modell 4 und Modell 9]()
+[GeoTIFF-Export für Modell 4 und Modell 9](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/da00c8cd0b51bb4d39f14a922f6161f16758ad26/MATLAB/logistic_regression_point.m#L612-L639)
+
+
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
 ca. **50–55 %**
 
