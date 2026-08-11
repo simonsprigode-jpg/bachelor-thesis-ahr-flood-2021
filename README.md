@@ -75,12 +75,6 @@ ist in der Bachelorarbeit beschrieben.
 | Random-Buffer | [Random Buffer 1000 Klassenstatistik.xlsx](./Random%20Buffer%201000%20Klassenstatistik.xlsx) | Buffermodell |
 | Random-Points | [Random Points 1000 Klassenstatistik.xlsx](./Random%20Points%201000%20Klassenstatistik.xlsx) | Punktmodell |
 
-| Datensatz | Datei | Verwendung |
-|---|---|---|
-| KFV | [KFV 1000 Klassenstatistik.xlsx](data/samples_1k/KFV%201000%20Klassenstatistik.xlsx) | Buffer- und Punktmodell |
-| Random-Buffer | [Random Buffer 1000 Klassenstatistik.xlsx](data/samples_1k/Random%20Buffer%201000%20Klassenstatistik.xlsx) | Buffermodell |
-| Random-Points | [Random Points 1000 Klassenstatistik.xlsx](data/samples_1k/Random%20Points%201000%20Klassenstatistik.xlsx) | Punktmodell |
-
 ### Geländeparameter-Raster
 
 Für die räumliche Anwendung der logistischen Regressionsmodelle werden
