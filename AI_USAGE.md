@@ -377,7 +377,15 @@ ca. **50–55 %**
    [Rasterbasierter Aufbau von `eta` und Berechnung von `P`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/900b4df1e97ee384d21c32d21ffff15cf70c8790/MATLAB/logistic_regression_point.m#L511-L546) -> gleiches siehe Buffermethode 
    [Rasterprüfung und GeoTIFF-Export](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/12672834bd6cf2af05091865e9da74b69f4227b3/MATLAB/logistic_regression_point.m#L403-L424)
 
+**Betroffene Codebereiche:**
 
+[Funktion `zscoreRaster()`](PERMALINK_4)
+
+[Rasterbasierter Aufbau von `eta` und Berechnung von `P`](PERMALINK_5)
+
+[Prüfung der Rastergrößen und Aufbau der NoData-Maske](PERMALINK_6)
+
+[GeoTIFF-Export für Modell 4 und Modell 9]()
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
 ca. **50–55 %**
 
