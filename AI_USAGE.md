@@ -439,7 +439,7 @@ ca. **50–55 %**
 
    **Betroffene Codebereiche:**  
    [Funktion `addIndices()`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/747b42df91f5a367aead8c424d78e8504724af0d/GEE/sentinel2_change_mapping.js#L1636-L1654)  
-   [Berechnung von `dNDVI`, `dBSI`, `vegLoss` und `newBareDebris`](HIER_PERMALINK_4)
+   [Berechnung von `dNDVI`, `dBSI`, `vegLoss` und `newBareDebris`](https://github.com/simonsprigode-jpg/bachelor-thesis-ahr-flood-2021/blob/13c284d346e754e7bbb0a2a89ed19da32bc69333/GEE/sentinel2_change_mapping.js#L1659-L1675)
 
 **Geschätzte KI-Unterstützung bei der programmiertechnischen Umsetzung:**  
 ca. **20 %**
