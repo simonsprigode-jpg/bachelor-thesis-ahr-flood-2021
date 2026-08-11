@@ -395,7 +395,7 @@ ca. **50–55 %**
 - Festlegung der Vor- und Nach-Ereignis-Zeiträume
 - Auswahl von NDVI und BSI zur Unterstützung der KFV-Kartierung
 - Festlegung der Veränderungsrichtung post minus pre
-- Festlegung der verwendeten Schwellenwerte
+- empirische Festlegung von dBSI > 0.15 als Screening-Schwellenwert auf Basis der visuellen Prüfung der resultierenden Veränderungsflächen
 - Verwendung der Hangneigung als zusätzliche Orientierung
 - visuelle Interpretation der erzeugten Layer bei der Kartierung der KFV
 
