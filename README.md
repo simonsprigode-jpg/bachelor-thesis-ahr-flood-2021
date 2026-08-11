@@ -98,17 +98,17 @@ Flow Accumulation wird zunächst mit `log10(x + 1)` transformiert. Anschließend
 
 Es werden neun schrittweise erweiterte Modelle berechnet:
 
-```text
-Modell 1: SLOPE
-Modell 2: SLOPE + MID
-Modell 3: SLOPE + MID + TWI
-Modell 4: SLOPE + MID + TWI + FLOW_LOG
-Modell 5: + VALLEY
-Modell 6: + VRM
-Modell 7: + PLAN
-Modell 8: + PROF
-Modell 9: + CONV
-```
+| Modell | Prädiktoren |
+|---|---|
+| **Modell 1** | `SLOPE` |
+| **Modell 2** | `SLOPE + MID` |
+| **Modell 3** | `SLOPE + MID + TWI` |
+| **Modell 4** | `SLOPE + MID + TWI + FLOW_LOG` |
+| **Modell 5** | `SLOPE + MID + TWI + FLOW_LOG + VALLEY` |
+| **Modell 6** | `SLOPE + MID + TWI + FLOW_LOG + VALLEY + VRM` |
+| **Modell 7** | `SLOPE + MID + TWI + FLOW_LOG + VALLEY + VRM + PLAN` |
+| **Modell 8** | `SLOPE + MID + TWI + FLOW_LOG + VALLEY + VRM + PLAN + PROF` |
+| **Modell 9** | `SLOPE + MID + TWI + FLOW_LOG + VALLEY + VRM + PLAN + PROF + CONV` |
 
 Die Modelle werden anhand von AIC, BIC und Deviance verglichen. Zusätzlich wird Delta AIC relativ zum Modell mit dem niedrigsten AIC berechnet. Das Modell mit dem niedrigsten AIC wird automatisch als bestes Modell ausgewählt.
 
