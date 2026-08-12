@@ -84,7 +84,7 @@ GitHub-Repository enthalten.
 
 Die Raster sind separat archiviert:
 
-**([Geländeparameter-Raster – Zenodo-Datensatz](https://doi.org/10.5281/zenodo.21892330))**
+**[Geländeparameter-Raster – Zenodo-Datensatz](https://doi.org/10.5281/zenodo.21892330)**
 
 Der externe Datensatz enthält die Raster für Slope, Mid-Slope Position,
 Topographic Wetness Index, Flow Accumulation, Valley Depth, Vector
