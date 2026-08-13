@@ -28,7 +28,7 @@ bachelor-thesis-ahr-flood-2021/
 
 ## Analytischer Workflow
 
-Die Sentinel-2-Auswertung in Google Earth Engine dient der Unterstützung der visuellen KFV-Kartierung. Dafür werden Bilddaten vor und nach dem Hochwasser aufbereitet und Veränderungen von NDVI und BSI dargestellt.
+Die Sentinel-2-Auswertung in Google Earth Engine dient der Unterstützung der visuellen KFV-Kartierung. Dafür werden Bilddaten vor und nach dem Hochwasser aufbereitet und Veränderungen von NDVI, RGB und BSI dargestellt.
 
 Anschließend werden neun Geländeparameter für KFV sowie zwei unterschiedliche Referenzansätze untersucht. Als Referenz dienen generierte Punkte innerhalb zufällig erzeugter Random-Buffer und Random-Points über das gesamte Untersuchungsgebiet. Die statistische Auswertung umfasst Boxplotvergleiche, Spearman-Rangkorrelationen und Cliff's Delta.
 
@@ -55,7 +55,7 @@ Die Spearman-Korrelationen und Cliff's-Delta-Berechnungen verwenden die eingeles
 ## Eingangsdaten
 
 Die für die MATLAB-Auswertungen verwendeten vorbereiteten Stichprobendaten
-sind im Repository im Ordner [`data/`](data/) enthalten. Die Herleitung,
+sind im Repository enthalten. Die Herleitung,
 Aufbereitung und methodische Verwendung der Datensätze und Geländeparameter
 ist in der Bachelorarbeit beschrieben.
 
