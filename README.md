@@ -30,9 +30,9 @@ bachelor-thesis-ahr-flood-2021/
 
 Die Sentinel-2-Auswertung in Google Earth Engine dient der Unterstützung der visuellen KFV-Kartierung. Dafür werden Bilddaten vor und nach dem Hochwasser aufbereitet und Veränderungen von NDVI und BSI dargestellt.
 
-Anschließend werden neun Geländeparameter für KFV sowie zwei unterschiedliche Referenzansätze untersucht. Als Referenz dienen Random-Buffer und Random-Points. Die statistische Auswertung umfasst Boxplotvergleiche, Spearman-Rangkorrelationen und Cliff's Delta.
+Anschließend werden neun Geländeparameter für KFV sowie zwei unterschiedliche Referenzansätze untersucht. Als Referenz dienen generierte Punkte innerhalb zufällig erzeugter Random-Buffer und Random-Points über das gesamte Untersuchungsgebiet. Die statistische Auswertung umfasst Boxplotvergleiche, Spearman-Rangkorrelationen und Cliff's Delta.
 
-Darauf aufbauend werden zwei Serien binärer logistischer Regressionsmodelle berechnet. Die Buffermethode unterscheidet zwischen KFV und Random-Buffer, während die Punktmethode KFV und Random-Points vergleicht. Die geschätzten Regressionsmodelle werden anschließend auf die vollständigen Geländeparameter-Raster übertragen, um räumliche Wahrscheinlichkeitskarten zu erzeugen.
+Darauf aufbauend werden zwei Serien binärer logistischer Regressionsmodelle berechnet. Die Buffermethode unterscheidet zwischen KFV und Random-Buffer, während die Punktmethode KFV und Random-Points vergleicht. Die geschätzten Regressionsmodelle werden anschließend auf die vollständigen Geländeparameter-Raster übertragen, um räumliche Anfälligkeitskarten zu erzeugen.
 
 ## Geländeparameter
 
@@ -94,11 +94,9 @@ Ruggedness Measure, Plan Curvature, Profile Curvature und Convergence Index.
 
 ### `01_boxplots_terrain_parameters.m`
 
-Das Skript vergleicht die Verteilungen der neun Geländeparameter zwischen KFV, Random-Buffer und Random-Points.
+Für jeden Geländeparameter wird ein Drei-Gruppen-Boxplot erzeugt. 
 
-Für jeden Geländeparameter wird ein Drei-Gruppen-Boxplot erzeugt. Valley Depth und Flow Accumulation werden für die Darstellung mit `log10(x + 1)` transformiert.
-
-Slope, TWI, Mid-Slope Position und Flow Accumulation werden zusätzlich in einer gemeinsamen 2×2-Abbildung dargestellt. Für diese vier Parameter werden außerdem Stichprobengröße, Mittelwert, Median, erstes und drittes Quartil sowie Interquartilsabstand berechnet und als Excel- und CSV-Datei ausgegeben.
+Slope, TWI, Mid-Slope Position und Flow Accumulation als Prädiktoren mit der höchsten Trennstärke werden zusätzlich in einer gemeinsamen 2×2-Abbildung dargestellt. Für diese vier Parameter werden außerdem Stichprobengröße, Mittelwert, Median, erstes und drittes Quartil sowie Interquartilsabstand berechnet und als Excel- und CSV-Datei ausgegeben.
 
 Die Abbildungen werden als PNG mit 300 dpi sowie als Vektor-PDF exportiert.
 
